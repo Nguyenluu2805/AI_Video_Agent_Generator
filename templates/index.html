@@ -148,11 +148,19 @@
 
                     <!-- Voice Selection -->
                     <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Giọng nền chuẩn Tiếng Việt (TTS)</label>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Động cơ & Giọng đọc lồng tiếng (TTS)</label>
                         <select id="voice-select" class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
-                            <option value="vi-VN-HoaiMyNeural" selected>Giọng Nữ (Hoài My - Truyền cảm, chuẩn sư phạm)</option>
-                            <option value="vi-VN-NamMinhNeural">Giọng Nam (Nam Minh - Trầm ấm, dõng dạc)</option>
-                            <option value="vi-VN-Standard-A">Google Vietnamese</option>
+                            <optgroup label="🌟 Microsoft Neural TTS (Miễn phí / Tự nhiên)">
+                                <option value="vi-VN-NamMinhNeural" selected>Giọng Nam (Nam Minh - Trầm ấm, dõng dạc)</option>
+                                <option value="vi-VN-HoaiMyNeural">Giọng Nữ (Hoài My - Truyền cảm, sư phạm)</option>
+                            </optgroup>
+                            <optgroup label="🚀 EverAI Multilingual (Hỗ trợ tiếng Anh & Clone)">
+                                <option value="voice-9c25f795-6ed9-4fd4">✨ Giọng Clone Cá Nhân (Nguyên)</option>
+                                <option value="vi_male_lehoang_mb">Lê Hoàng (Nam - Miền Bắc)</option>
+                                <option value="vi_male_minhtriet_mb">Minh Triết (Nam - Miền Bắc)</option>
+                                <option value="vi_female_thuytrang_mb">Thùy Trang (Nữ - Miền Bắc)</option>
+                                <option value="vi_female_kieunhi_mn">Kiều Nhi (Nữ - Miền Nam)</option>
+                            </optgroup>
                         </select>
                     </div>
 
