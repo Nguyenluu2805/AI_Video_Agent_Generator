@@ -330,7 +330,7 @@
                         </div>
 
                         <!-- Active HTML5 Video Player -->
-                        <video id="video-player" controls class="w-full h-full object-contain hidden">
+                        <video id="video-player" controls preload="auto" playsinline class="w-full h-full object-contain hidden bg-dark-950 rounded-lg">
                             <source id="video-source" src="" type="video/mp4">
                             Trình duyệt của bạn không hỗ trợ thẻ video.
                         </video>
@@ -732,10 +732,25 @@
 
             videoPlaceholder.classList.add('hidden');
             videoPlayer.classList.remove('hidden');
+            videoPlayer.src = videoUrl;
             videoSource.src = videoUrl;
             btnDownloadVideo.href = downloadUrl;
             btnDownloadVideo.classList.remove('hidden');
             videoPlayer.load();
+        }
+
+        function checkLatestVideo() {
+            fetch('/api/latest-video')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.exists && data.filename) {
+                        showCompletedVideo(data.filename);
+                        pipelineStatusBadge.innerText = 'Đã có video sẵn sàng';
+                        pipelineStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+                        appendLog(`> Đã nạp video bài giảng có sẵn: ${data.filename} (${data.size_mb} MB)`);
+                    }
+                })
+                .catch(() => {});
         }
 
         btnQuickGenerate.addEventListener('click', () => {
@@ -858,8 +873,9 @@
             });
         });
 
-        // Initialize SSE connection on startup
+        // Initialize on startup
         connectSSE();
+        checkLatestVideo();
     </script>
 </body>
 </html>

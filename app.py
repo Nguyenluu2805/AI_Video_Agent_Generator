@@ -238,13 +238,28 @@ def progress_stream():
 
     return Response(event_stream(), mimetype="text/event-stream")
 
+@app.route("/api/latest-video")
+def get_latest_video():
+    """Kiểm tra video đã render gần nhất trên máy."""
+    out_dir = config.OUTPUT_DIR
+    videos = sorted(out_dir.glob("*.mp4"), key=lambda p: p.stat().st_mtime, reverse=True)
+    if videos and videos[0].stat().st_size > 1024:
+        v = videos[0]
+        return jsonify({
+            "exists": True,
+            "filename": v.name,
+            "size_mb": round(v.stat().st_size / (1024 * 1024), 2),
+            "url": f"/api/video/{v.name}"
+        })
+    return jsonify({"exists": False})
+
 @app.route("/api/slide-image/<filename>")
 def serve_slide_image(filename):
     return send_from_directory(str(config.IMAGES_DIR.resolve()), filename)
 
 @app.route("/api/video/<filename>")
 def serve_video(filename):
-    return send_from_directory(str(config.OUTPUT_DIR.resolve()), filename, mimetype="video/mp4")
+    return send_from_directory(str(config.OUTPUT_DIR.resolve()), filename, mimetype="video/mp4", conditional=True)
 
 @app.route("/api/download-video/<filename>")
 def download_video(filename):

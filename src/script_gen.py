@@ -47,7 +47,7 @@ def generate_script_gemini(slides_data: List[Dict[str, Any]], api_key: str) -> L
     client = genai.Client(api_key=api_key.strip())
     prompt = f"Hãy đóng vai một giảng viên sư phạm xuất sắc và viết lời giảng chi tiết, truyền cảm cho từng slide dưới đây:\n\n{json.dumps(slides_data, ensure_ascii=False, indent=2)}"
 
-    models_to_try = [config.GEMINI_MODEL, "gemini-2.5-flash", "gemini-1.5-flash"]
+    models_to_try = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash-latest", "gemini-2.5-pro", config.GEMINI_MODEL]
     last_err = None
     for model_name in models_to_try:
         try:
