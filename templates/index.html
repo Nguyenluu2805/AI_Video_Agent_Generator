@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Lecture Studio | Biến PPTX thành Video Bài Giảng Chuyên Nghiệp</title>
+    <title>AI Lecture Video Studio | Biến PPTX thành Video Bài Giảng</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -26,10 +25,6 @@
                             400: '#38bdf8',
                             500: '#0ea5e9',
                             600: '#0284c7',
-                        },
-                        accent: {
-                            500: '#6366f1',
-                            600: '#4f46e5',
                         }
                     }
                 }
@@ -39,68 +34,85 @@
     <style>
         body { background-color: #07090e; color: #f1f5f9; }
         .glass-panel {
-            background: rgba(13, 17, 26, 0.75);
+            background: rgba(13, 17, 26, 0.8);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-        }
-        .glass-panel-accent {
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%);
-            border: 1px solid rgba(14, 165, 233, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .glow-primary {
-            box-shadow: 0 0 25px -3px rgba(14, 165, 233, 0.25);
+            box-shadow: 0 0 25px -4px rgba(14, 165, 233, 0.3);
         }
         .glow-accent {
-            box-shadow: 0 0 25px -3px rgba(99, 102, 241, 0.25);
+            box-shadow: 0 0 25px -4px rgba(99, 102, 241, 0.3);
         }
-        /* Custom scrollbars */
+        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0d111a; }
         ::-webkit-scrollbar-thumb { background: #2a364f; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #3b4d70; }
+
+        /* Toast animation */
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes toastSlideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        .toast-enter { animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .toast-exit { animation: toastSlideOut 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans antialiased text-slate-100 selection:bg-sky-500 selection:text-white">
 
+    <!-- Toast Notification Container (Floating Top-Right) -->
+    <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none"></div>
+
     <!-- Header Navigation -->
-    <header class="border-b border-slate-800/80 bg-dark-950/80 backdrop-blur-md sticky top-0 z-50">
+    <header class="border-b border-slate-800/80 bg-dark-950/90 backdrop-blur-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3.5">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
-                    <i class="fa-solid fa-play text-white text-base ml-0.5"></i>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-sky-500/20 text-white">
+                    <!-- SVG Play Sparkle Icon -->
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M5.536 21.886a1.5 1.5 0 0 1-2.286-1.286V3.4a1.5 1.5 0 0 1 2.286-1.286l14.4 8.6a1.5 1.5 0 0 1 0 2.572l-14.4 8.6z"/>
+                    </svg>
                 </div>
                 <div>
                     <div class="flex items-center space-x-2">
                         <h1 class="text-base font-extrabold bg-gradient-to-r from-white via-slate-100 to-sky-400 bg-clip-text text-transparent">AI Video Agent Studio</h1>
                         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20">v2.0 PRO</span>
                     </div>
-                    <p class="text-xs text-slate-400">Hệ Thống Tự Động Hóa Sản Xuất Video Bài Giảng Từ Slide PPTX</p>
+                    <p class="text-xs text-slate-400">Tự Động Hóa Sản Xuất Video Bài Giảng Từ Slide PowerPoint</p>
                 </div>
             </div>
 
             <!-- Hardware & Engine Status -->
             <div class="flex items-center space-x-3">
-                <div class="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-dark-900 border border-slate-800">
+                <div class="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-dark-900 border border-slate-800 text-xs">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span class="text-xs font-semibold text-slate-300">GPU: RTX 3060 Ti</span>
+                    <span class="font-semibold text-slate-300">GPU: RTX 3060 Ti</span>
                     <span class="text-slate-600">|</span>
-                    <span class="text-xs text-slate-400">PowerPoint COM</span>
+                    <span class="text-slate-400">PowerPoint COM</span>
                     <span class="text-slate-600">|</span>
-                    <span class="text-xs text-indigo-400 font-medium">EverAI Ready</span>
+                    <span class="text-indigo-400 font-medium">EverAI & EdgeTTS</span>
                 </div>
-                <button onclick="location.reload()" class="p-2 rounded-xl bg-dark-900 hover:bg-dark-800 border border-slate-800 text-slate-400 hover:text-white transition-colors" title="Làm mới trang">
-                    <i class="fa-solid fa-rotate-right text-xs"></i>
+                <button onclick="location.reload()" class="p-2 rounded-xl bg-dark-900 hover:bg-dark-800 border border-slate-800 text-slate-400 hover:text-white transition-colors" title="Làm mới">
+                    <!-- SVG Refresh Icon -->
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Grid -->
+    <!-- Main Content Layout -->
     <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            <!-- LEFT COLUMN: Studio Controls (5 cols) -->
+            <!-- LEFT COLUMN: Controls & Setup (5 cols) -->
             <div class="lg:col-span-5 space-y-5">
                 
                 <!-- CARD 1: Upload Presentation -->
@@ -116,25 +128,31 @@
                     </div>
 
                     <!-- Dropzone -->
-                    <div id="drop-zone" class="border-2 border-dashed border-slate-700 hover:border-sky-500/80 rounded-xl p-5 text-center cursor-pointer transition-all bg-dark-900/60 hover:bg-sky-500/5 group">
+                    <div id="drop-zone" class="border-2 border-dashed border-slate-700 hover:border-sky-500 rounded-xl p-5 text-center cursor-pointer transition-all bg-dark-900/60 hover:bg-sky-500/5 group">
                         <input type="file" id="file-input" accept=".pptx" class="hidden">
-                        <div class="w-11 h-11 mx-auto rounded-xl bg-dark-800 group-hover:bg-sky-500/20 flex items-center justify-center transition-colors mb-2.5 border border-slate-700 group-hover:border-sky-500/40">
-                            <i class="fa-solid fa-file-powerpoint text-xl text-slate-400 group-hover:text-sky-400 transition-colors"></i>
+                        <div class="w-12 h-12 mx-auto rounded-xl bg-dark-800 group-hover:bg-sky-500/20 flex items-center justify-center transition-colors mb-2.5 border border-slate-700 group-hover:border-sky-500/40 text-slate-400 group-hover:text-sky-400">
+                            <!-- SVG PowerPoint Presentation Icon -->
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
                         </div>
                         <p class="text-xs font-semibold text-slate-200" id="file-name-display">Kéo thả file .pptx vào đây hoặc <span class="text-sky-400 underline">tải lên</span></p>
                         <p class="text-[11px] text-slate-400 mt-1" id="file-info-display">Hỗ trợ Microsoft PowerPoint 2016 / 2019 / 2021 / Office 365</p>
                     </div>
 
                     <div class="flex items-center justify-between pt-1 text-xs">
-                        <span class="text-slate-400 text-[11px]">Chưa có file riêng?</span>
-                        <button id="btn-use-sample" class="text-sky-400 hover:text-sky-300 font-semibold text-[11px] flex items-center space-x-1 hover:underline">
-                            <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                        <span class="text-slate-400 text-[11px]">Chưa có file bài giảng?</span>
+                        <button id="btn-use-sample" class="text-sky-400 hover:text-sky-300 font-semibold text-[11px] flex items-center space-x-1.5 hover:underline">
+                            <!-- SVG Sparkles Icon -->
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.286L13 21l-2.286-6.857L5 12l5.714-2.286L13 3z" />
+                            </svg>
                             <span>Dùng Slide mẫu demo_lecture.pptx</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- CARD 2: Voice & AI Engine Settings -->
+                <!-- CARD 2: Voice & AI Studio Settings -->
                 <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-2.5">
@@ -150,7 +168,7 @@
                     <div>
                         <label class="block text-xs font-medium text-slate-300 mb-1.5 flex items-center justify-between">
                             <span>Lựa chọn Giọng đọc bài giảng (TTS)</span>
-                            <span class="text-[10px] text-slate-400 font-normal">Hỗ trợ Tiếng Việt & Anh</span>
+                            <span class="text-[10px] text-slate-400 font-normal">Đa ngôn ngữ & Sư phạm</span>
                         </label>
                         <div class="relative">
                             <select id="voice-select" class="w-full bg-dark-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sky-500 appearance-none font-medium">
@@ -167,7 +185,10 @@
                                 </optgroup>
                             </select>
                             <div class="absolute right-3.5 top-3 pointer-events-none text-slate-400">
-                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                                <!-- SVG Chevron Down -->
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                </svg>
                             </div>
                         </div>
                     </div>
@@ -176,12 +197,17 @@
                     <div class="rounded-xl border border-slate-800 bg-dark-900/60 overflow-hidden transition-all">
                         <button type="button" onclick="toggleAdvancedAccordion()" class="w-full px-4 py-3 flex items-center justify-between hover:bg-dark-800/60 transition-colors text-left select-none">
                             <div class="flex items-center space-x-2.5">
-                                <i class="fa-solid fa-sliders text-xs text-slate-400"></i>
+                                <!-- SVG Sliders Icon -->
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                                </svg>
                                 <span class="text-xs font-semibold text-slate-300">Tùy chọn nâng cao & Clone giọng thật (RVC)</span>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <span id="advanced-status-badge" class="text-[10px] text-slate-500">Mặc định thu gọn</span>
-                                <i id="advanced-chevron" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform duration-300"></i>
+                                <svg id="advanced-chevron" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                </svg>
                             </div>
                         </button>
 
@@ -197,7 +223,11 @@
                                     <input type="password" id="gemini-api-key" placeholder="AIzaSy... (Để trống nếu dùng kịch bản có sẵn)" 
                                            class="w-full bg-dark-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500">
                                     <button type="button" onclick="toggleKeyVisibility()" class="absolute right-3 top-2 text-slate-400 hover:text-slate-200">
-                                        <i class="fa-regular fa-eye text-xs" id="eye-icon"></i>
+                                        <!-- SVG Eye Icon -->
+                                        <svg id="eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
@@ -207,9 +237,13 @@
                                 <label class="block text-[11px] font-medium text-slate-300 mb-1">
                                     Video / Audio Mẫu Giọng Thật (.mp4, .mov, .mp3, .wav)
                                 </label>
-                                <div id="voice-drop-zone" class="border border-dashed border-slate-700 hover:border-indigo-500/80 rounded-lg p-3 text-center cursor-pointer transition-all bg-dark-950/60 hover:bg-indigo-500/5 group">
+                                <div id="voice-drop-zone" class="border border-dashed border-slate-700 hover:border-indigo-500 rounded-lg p-3 text-center cursor-pointer transition-all bg-dark-950/60 hover:bg-indigo-500/5 group">
                                     <input type="file" id="voice-file-input" accept="video/*,audio/*,.mp4,.mov,.mp3,.wav,.m4a" class="hidden">
-                                    <i class="fa-solid fa-microphone-lines text-base text-indigo-400 mb-1"></i>
+                                    <div class="w-8 h-8 mx-auto rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                                        </svg>
+                                    </div>
                                     <p class="text-[11px] font-medium text-slate-200" id="voice-file-display">Kéo thả Video hoặc File Ghi Âm vào đây</p>
                                     <p class="text-[10px] text-slate-400">Tự động trích xuất file mẫu để RVC GPU học giọng</p>
                                 </div>
@@ -232,14 +266,20 @@
 
                     <!-- Action Buttons -->
                     <div class="space-y-2.5 pt-2">
-                        <button id="btn-quick-generate" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 via-indigo-600 to-purple-600 hover:from-sky-400 hover:via-indigo-500 hover:to-purple-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg glow-primary flex items-center justify-center transition-all hover:scale-[1.01] active:scale-[0.99]">
-                            <i class="fa-solid fa-bolt text-yellow-300 mr-2 text-sm"></i>
-                            Tạo Video Tự Động 1-Click
+                        <button id="btn-quick-generate" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 via-indigo-600 to-purple-600 hover:from-sky-400 hover:via-indigo-500 hover:to-purple-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg glow-primary flex items-center justify-center transition-all hover:scale-[1.01] active:scale-[0.99] space-x-2">
+                            <!-- SVG Bolt Icon -->
+                            <svg class="w-4 h-4 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Tạo Video Tự Động 1-Click</span>
                         </button>
                         
-                        <button id="btn-preview-scripts" class="w-full py-2.5 px-4 rounded-xl bg-dark-800 hover:bg-dark-700 border border-slate-700/80 text-slate-200 font-semibold text-xs flex items-center justify-center transition-all">
-                            <i class="fa-regular fa-pen-to-square text-sky-400 mr-2"></i>
-                            Xem & Sửa Kịch Bản Trước Khi Tạo
+                        <button id="btn-preview-scripts" class="w-full py-2.5 px-4 rounded-xl bg-dark-800 hover:bg-dark-700 border border-slate-700/80 text-slate-200 font-semibold text-xs flex items-center justify-center transition-all space-x-2">
+                            <!-- SVG Edit Icon -->
+                            <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            <span>Xem & Sửa Kịch Bản Trước Khi Tạo</span>
                         </button>
                     </div>
 
@@ -254,7 +294,10 @@
                 <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-4">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-2.5">
-                            <i class="fa-solid fa-film text-sky-400"></i>
+                            <!-- SVG Film Icon -->
+                            <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                            </svg>
                             <h2 class="text-sm font-bold text-white uppercase tracking-wider">Video Bài Giảng Hoàn Thiện</h2>
                         </div>
                         <div class="flex items-center space-x-2">
@@ -262,7 +305,9 @@
                                 1080p Full HD
                             </span>
                             <a id="btn-download-video" href="#" download class="hidden px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex items-center space-x-1.5 shadow-md">
-                                <i class="fa-solid fa-download text-xs"></i>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
                                 <span>Tải Video MP4</span>
                             </a>
                         </div>
@@ -273,12 +318,14 @@
                         
                         <!-- Empty State Placeholder -->
                         <div id="video-placeholder" class="text-center p-6 space-y-3">
-                            <div class="w-16 h-16 rounded-2xl bg-dark-900 border border-slate-800 flex items-center justify-center mx-auto text-slate-600">
-                                <i class="fa-solid fa-clapperboard text-2xl"></i>
+                            <div class="w-14 h-14 rounded-2xl bg-dark-900 border border-slate-800 flex items-center justify-center mx-auto text-slate-600">
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
                             </div>
                             <div>
                                 <h3 class="text-sm font-semibold text-slate-300">Chưa có video được render</h3>
-                                <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Chọn file slide bài giảng và nhấn "Tạo Video Tự Động 1-Click" để bắt đầu quy trình AI hoàn toàn tự động.</p>
+                                <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Chọn file bài giảng và nhấn "Tạo Video Tự Động 1-Click" để bắt đầu quy trình AI hoàn toàn tự động.</p>
                             </div>
                         </div>
 
@@ -295,7 +342,10 @@
                 <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-3.5">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-2">
-                            <i class="fa-solid fa-bars-staggered text-sky-400"></i>
+                            <!-- SVG Steps Icon -->
+                            <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7" />
+                            </svg>
                             <h2 class="text-xs font-bold text-white uppercase tracking-wider">Tiến Trình Xử Lý Pipeline</h2>
                         </div>
                         <span id="pipeline-status-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-800 text-slate-300 border border-slate-700">
@@ -337,13 +387,16 @@
                 <div class="glass-panel rounded-2xl p-4 shadow-xl space-y-2">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                            <i class="fa-solid fa-terminal text-slate-500"></i>
+                            <!-- SVG Terminal Icon -->
+                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
                             <span>Nhật Ký Thực Thi (Console Log)</span>
                         </div>
                         <button onclick="clearLogs()" class="text-[11px] text-slate-500 hover:text-slate-300">Xóa log</button>
                     </div>
                     <div id="log-terminal" class="h-32 bg-dark-950 rounded-xl p-3 font-mono text-[11px] text-slate-300 overflow-y-auto space-y-1 border border-slate-800/80 selection:bg-slate-700">
-                        <div class="text-sky-400">> AI Video Studio đã khởi động. Sẵn sàng nhận lệnh...</div>
+                        <div class="text-sky-400">> AI Video Studio v2.0 đã khởi động. Sẵn sàng nhận lệnh...</div>
                     </div>
                 </div>
 
@@ -355,8 +408,10 @@
         <div id="script-editor-section" class="mt-8 glass-panel rounded-2xl p-6 shadow-2xl space-y-6 hidden border border-sky-500/30">
             <div class="flex items-center justify-between border-b border-slate-800 pb-4">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 text-lg">
-                        <i class="fa-regular fa-pen-to-square"></i>
+                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
                     </div>
                     <div>
                         <h2 class="text-base font-bold text-white">Chỉnh Sửa Kịch Bản Giảng Dạy Từng Slide</h2>
@@ -368,7 +423,9 @@
                         Đóng lại
                     </button>
                     <button id="btn-confirm-render" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-sky-500/20 flex items-center space-x-2">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.286L13 21l-2.286-6.857L5 12l5.714-2.286L13 3z" />
+                        </svg>
                         <span>Xác Nhận & Render Video Ngay</span>
                     </button>
                 </div>
@@ -376,7 +433,7 @@
 
             <!-- Slides Grid -->
             <div id="slides-editor-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-h-[600px] overflow-y-auto pr-2">
-                <!-- Injected via JavaScript -->
+                <!-- Dynamic slide cards injected here -->
             </div>
         </div>
 
@@ -385,11 +442,11 @@
     <!-- Footer -->
     <footer class="border-t border-slate-800/60 py-4 mt-auto">
         <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
-            AI Video Agent Generator • Hoàn toàn tự động hóa từ Slide PPTX sang Video Bài Giảng 1080p
+            AI Video Agent Generator • Chuẩn hóa kiến trúc & Tự động hóa sản xuất Video Bài Giảng 1080p
         </div>
     </footer>
 
-    <!-- Client-Side App Logic -->
+    <!-- Client-Side App Logic & Toast Notification System -->
     <script>
         let currentFilename = 'demo_lecture.pptx';
         let eventSource = null;
@@ -422,7 +479,69 @@
         const slidesEditorGrid = document.getElementById('slides-editor-grid');
         const btnConfirmRender = document.getElementById('btn-confirm-render');
 
-        // File Upload Handlers
+        // ==========================================
+        // TOAST NOTIFICATION SYSTEM
+        // ==========================================
+        function showToast({ title, message, type = 'info', duration = 4000 }) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast-enter pointer-events-auto flex flex-col rounded-xl p-3.5 shadow-2xl border backdrop-blur-xl transition-all';
+
+            let iconSvg = '';
+            let borderBg = '';
+            let progressBg = '';
+
+            if (type === 'success') {
+                borderBg = 'bg-dark-900/95 border-emerald-500/40 text-emerald-300 shadow-emerald-500/10';
+                progressBg = 'bg-emerald-500';
+                iconSvg = `<svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            } else if (type === 'error') {
+                borderBg = 'bg-dark-900/95 border-rose-500/40 text-rose-300 shadow-rose-500/10';
+                progressBg = 'bg-rose-500';
+                iconSvg = `<svg class="w-5 h-5 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            } else if (type === 'warning') {
+                borderBg = 'bg-dark-900/95 border-amber-500/40 text-amber-300 shadow-amber-500/10';
+                progressBg = 'bg-amber-500';
+                iconSvg = `<svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
+            } else {
+                borderBg = 'bg-dark-900/95 border-sky-500/40 text-sky-300 shadow-sky-500/10';
+                progressBg = 'bg-sky-500';
+                iconSvg = `<svg class="w-5 h-5 text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            }
+
+            toast.classList.add(...borderBg.split(' '));
+            toast.innerHTML = `
+                <div class="flex items-start justify-between space-x-2.5">
+                    <div class="flex items-start space-x-2.5">
+                        ${iconSvg}
+                        <div>
+                            <h4 class="text-xs font-bold text-white">${title}</h4>
+                            <p class="text-[11px] text-slate-300 mt-0.5 leading-snug">${message}</p>
+                        </div>
+                    </div>
+                    <button class="toast-close text-slate-400 hover:text-white p-0.5 shrink-0 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(toast);
+
+            const removeToast = () => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 250);
+            };
+
+            toast.querySelector('.toast-close').addEventListener('click', removeToast);
+            if (duration > 0) {
+                setTimeout(removeToast, duration);
+            }
+        }
+
+        // ==========================================
+        // FILE UPLOAD HANDLERS
+        // ==========================================
         dropZone.addEventListener('click', () => fileInput.click());
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-sky-500', 'bg-sky-500/10'); });
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-sky-500', 'bg-sky-500/10'));
@@ -449,16 +568,17 @@
 
         btnUseSample.addEventListener('click', () => {
             currentFilename = 'demo_lecture.pptx';
-            fileNameDisplay.innerHTML = `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Đang dùng: demo_lecture.pptx</span>`;
+            fileNameDisplay.innerHTML = `<span class="text-emerald-400 font-semibold">Đang dùng: demo_lecture.pptx</span>`;
             fileInfoDisplay.innerText = 'Slide bài giảng mẫu chuẩn 26 trang có nội dung và cấu trúc đầy đủ';
             fileStatusTag.innerText = 'demo_lecture.pptx';
             fileStatusTag.className = 'px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
             appendLog('> Đã chọn slide mẫu demo_lecture.pptx.');
+            showToast({ title: 'Đã chọn Slide mẫu', message: 'demo_lecture.pptx (26 trang) đã sẵn sàng để tạo video.', type: 'info' });
         });
 
         function uploadFile(file) {
             if (!file.name.toLowerCase().endsWith('.pptx')) {
-                alert('Vui lòng chỉ tải lên file có định dạng PowerPoint .pptx');
+                showToast({ title: 'File không hợp lệ', message: 'Vui lòng chỉ tải lên file bài giảng định dạng PowerPoint (.pptx)', type: 'warning' });
                 return;
             }
             fileNameDisplay.innerText = `Đang tải lên: ${file.name}...`;
@@ -470,20 +590,23 @@
                 .then(data => {
                     if (data.success) {
                         currentFilename = data.filename;
-                        fileNameDisplay.innerHTML = `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> ${data.filename}</span>`;
+                        fileNameDisplay.innerHTML = `<span class="text-emerald-400 font-semibold">${data.filename}</span>`;
                         fileInfoDisplay.innerText = `Kích thước: ${data.size_kb} KB`;
                         fileStatusTag.innerText = 'Đã tải lên';
                         fileStatusTag.className = 'px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
                         appendLog(`> Tải lên thành công: ${data.filename}`);
+                        showToast({ title: 'Tải lên thành công', message: `File ${data.filename} (${data.size_kb} KB) đã sẵn sàng.`, type: 'success' });
                     } else {
-                        alert(data.error || 'Lỗi tải file');
+                        showToast({ title: 'Lỗi tải file', message: data.error || 'Không thể tải file lên', type: 'error' });
                     }
                 })
-                .catch(err => alert('Lỗi tải file: ' + err));
+                .catch(err => {
+                    showToast({ title: 'Lỗi mạng', message: String(err), type: 'error' });
+                });
         }
 
         function uploadVoiceSampleFile(file) {
-            voiceFileDisplay.innerText = `Đang tải & trích xuất giọng: ${file.name}...`;
+            voiceFileDisplay.innerText = `Đang tải & trích xuất: ${file.name}...`;
             const formData = new FormData();
             formData.append('file', file);
 
@@ -491,13 +614,16 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        voiceFileDisplay.innerHTML = `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-check mr-1"></i> ${data.filename} (${data.size_mb} MB)</span>`;
+                        voiceFileDisplay.innerHTML = `<span class="text-emerald-400 font-semibold">${data.filename} (${data.size_mb} MB)</span>`;
                         appendLog(`> Đã gắn file giọng nói: ${data.filename}. Trích xuất WAV thành công.`);
+                        showToast({ title: 'Gắn giọng thật thành công', message: `Đã trích xuất file âm thanh chuẩn WAV (${data.size_mb} MB) để RVC học giọng.`, type: 'success' });
                     } else {
-                        alert(data.error || 'Lỗi trích xuất giọng nói');
+                        showToast({ title: 'Lỗi trích xuất giọng', message: data.error || 'Không thể xử lý file âm thanh', type: 'error' });
                     }
                 })
-                .catch(err => alert('Lỗi: ' + err));
+                .catch(err => {
+                    showToast({ title: 'Lỗi', message: String(err), type: 'error' });
+                });
         }
 
         // Toggle Accordion function
@@ -521,13 +647,10 @@
 
         function toggleKeyVisibility() {
             const input = document.getElementById('gemini-api-key');
-            const icon = document.getElementById('eye-icon');
             if (input.type === 'password') {
                 input.type = 'text';
-                icon.classList.replace('fa-eye', 'fa-eye-slash');
             } else {
                 input.type = 'password';
-                icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         }
 
@@ -539,7 +662,7 @@
         }
 
         function clearLogs() {
-            logTerminal.innerHTML = '<div class="text-sky-400">> Đã xóa toàn bộ log.</div>';
+            logTerminal.innerHTML = '<div class="text-sky-400">> Đã xóa toàn bộ nhật ký console.</div>';
         }
 
         function connectSSE() {
@@ -561,12 +684,14 @@
                     showCompletedVideo(data.video);
                     pipelineStatusBadge.innerText = 'Hoàn thành 100%';
                     pipelineStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+                    showToast({ title: '🎉 Tạo Video Hoàn Tất!', message: `Video bài giảng 1080p đã xuất xưởng: ${data.video}`, type: 'success', duration: 7000 });
                 } else if (data.status === 'running') {
                     pipelineStatusBadge.innerText = `Đang chạy: ${data.step}`;
                     pipelineStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30 animate-pulse';
                 } else if (data.status === 'error') {
                     pipelineStatusBadge.innerText = 'Có lỗi xảy ra';
                     pipelineStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+                    showToast({ title: 'Tiến trình thất bại', message: data.log || 'Có lỗi xảy ra trong quá trình xử lý.', type: 'error', duration: 6000 });
                 }
             };
         }
@@ -619,6 +744,7 @@
             const enableRvc = document.getElementById('rvc-toggle').checked;
 
             appendLog(`> Bắt đầu tạo video 1-Click cho file: ${currentFilename}`);
+            showToast({ title: 'Bắt đầu tiến trình', message: `Hệ thống AI đang khởi động sản xuất video cho ${currentFilename}...`, type: 'info' });
             connectSSE();
 
             fetch('/api/start-pipeline', {
@@ -631,7 +757,7 @@
                     enable_rvc: enableRvc
                 })
             }).then(r => r.json()).then(data => {
-                if (data.error) alert(data.error);
+                if (data.error) showToast({ title: 'Lỗi', message: data.error, type: 'error' });
             });
         });
 
@@ -639,7 +765,8 @@
             const apiKey = document.getElementById('gemini-api-key').value;
             appendLog('> Đang trích xuất slide và chuẩn bị kịch bản...');
             btnPreviewScripts.disabled = true;
-            btnPreviewScripts.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang tải kịch bản...`;
+            btnPreviewScripts.innerHTML = `<span>Đang tải kịch bản...</span>`;
+            showToast({ title: 'Đang trích xuất', message: 'Hệ thống đang trích xuất slide và tạo kịch bản sư phạm...', type: 'info' });
 
             fetch('/api/extract-and-script', {
                 method: 'POST',
@@ -650,20 +777,24 @@
                 })
             }).then(r => r.json()).then(data => {
                 btnPreviewScripts.disabled = false;
-                btnPreviewScripts.innerHTML = `<i class="fa-regular fa-pen-to-square text-sky-400 mr-2"></i> Xem & Sửa Kịch Bản Trước Khi Tạo`;
+                btnPreviewScripts.innerHTML = `
+                    <svg class="w-4 h-4 text-sky-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                    <span>Xem & Sửa Kịch Bản Trước Khi Tạo</span>
+                `;
                 
                 if (data.success) {
                     loadedSlides = data.slides;
                     renderScriptEditor(data.slides);
                     scriptEditorSection.classList.remove('hidden');
                     scriptEditorSection.scrollIntoView({ behavior: 'smooth' });
+                    showToast({ title: 'Kịch bản đã sẵn sàng', message: `Đã nạp ${data.slides.length} slide. Bạn có thể xem và chỉnh sửa trực tiếp phía dưới!`, type: 'success' });
                 } else {
-                    alert(data.error || 'Lỗi khi trích xuất kịch bản');
+                    showToast({ title: 'Lỗi trích xuất kịch bản', message: data.error || 'Lỗi xử lý', type: 'error' });
                 }
             }).catch(e => {
                 btnPreviewScripts.disabled = false;
-                btnPreviewScripts.innerHTML = `<i class="fa-regular fa-pen-to-square text-sky-400 mr-2"></i> Xem & Sửa Kịch Bản Trước Khi Tạo`;
-                alert('Lỗi: ' + e);
+                btnPreviewScripts.innerHTML = `<span>Xem & Sửa Kịch Bản Trước Khi Tạo</span>`;
+                showToast({ title: 'Lỗi', message: String(e), type: 'error' });
             });
         });
 
@@ -709,6 +840,7 @@
 
             closeScriptEditor();
             appendLog('> Bắt đầu xuất video với kịch bản tùy chỉnh của bạn...');
+            showToast({ title: 'Bắt đầu kết xuất', message: 'Đang khởi động render video với kịch bản tùy chỉnh...', type: 'info' });
             connectSSE();
 
             fetch('/api/start-pipeline', {
@@ -722,11 +854,11 @@
                     enable_rvc: enableRvc
                 })
             }).then(r => r.json()).then(data => {
-                if (data.error) alert(data.error);
+                if (data.error) showToast({ title: 'Lỗi', message: data.error, type: 'error' });
             });
         });
 
-        // Initialize SSE connection on load
+        // Initialize SSE connection on startup
         connectSSE();
     </script>
 </body>
