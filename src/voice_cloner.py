@@ -74,11 +74,11 @@ def clone_voice_spectral(source_audio: Path, reference_audio: Path, output_audio
         except Exception: pass
 
     if f0 < 160:
-        audio_filter = "equalizer=f=125:t=q:w=1.2:g=5,equalizer=f=350:t=q:w=1.5:g=3,equalizer=f=2600:t=q:w=1:g=2,asetrate=44100*0.95,aresample=44100,atempo=1.05"
+        audio_filter = "equalizer=f=125:t=q:w=1.2:g=4,equalizer=f=350:t=q:w=1.5:g=2,equalizer=f=2600:t=q:w=1.2:g=1.5"
     elif f0 < 230:
-        audio_filter = "equalizer=f=160:t=q:w=1.2:g=4,equalizer=f=900:t=q:w=1.2:g=2,equalizer=f=3200:t=q:w=1:g=2.5,asetrate=44100*0.98,aresample=44100,atempo=1.02"
+        audio_filter = "equalizer=f=160:t=q:w=1.2:g=3,equalizer=f=900:t=q:w=1.2:g=1.5,equalizer=f=3200:t=q:w=1.2:g=2"
     else:
-        audio_filter = "equalizer=f=280:t=q:w=1.2:g=2,equalizer=f=3000:t=q:w=1:g=4,equalizer=f=6000:t=q:w=1:g=2,asetrate=44100*1.04,aresample=44100,atempo=0.96"
+        audio_filter = "equalizer=f=280:t=q:w=1.2:g=2,equalizer=f=3000:t=q:w=1.2:g=3,equalizer=f=6000:t=q:w=1.2:g=1.5"
 
     cmd = [
         ffmpeg_exe, "-y",
@@ -86,14 +86,15 @@ def clone_voice_spectral(source_audio: Path, reference_audio: Path, output_audio
         "-af", audio_filter,
         "-c:a", "libmp3lame",
         "-b:a", "192k",
+        "-ar", "44100",
         str(output_audio.resolve())
     ]
     subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
     return True
 
 
-def run_voice_cloner(audio_records: List[Dict[str, Any]] = None, enable_rvc: bool = True) -> List[Dict[str, Any]]:
-    """Hàm thực thi chính cho Bước 4: Voice Cloning"""
+def run_voice_cloner(audio_records: List[Dict[str, Any]] = None, enable_rvc: bool = False) -> List[Dict[str, Any]]:
+    """Hàm thực thi chính cho Bước 4: Voice Cloning (Mặc định tắt nếu người dùng không chọn)"""
     config.FINAL_AUDIO_DIR.mkdir(parents=True, exist_ok=True)
     for old_file in config.FINAL_AUDIO_DIR.glob("final_slide_*.mp3"):
         try: old_file.unlink()
