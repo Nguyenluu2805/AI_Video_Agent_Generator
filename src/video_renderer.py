@@ -40,6 +40,9 @@ def assemble_video(slide_items: List[Dict[str, Any]], output_video_path: Path) -
     temp_clips = []
     temp_dir = config.WORKSPACE_DIR / "temp_clips"
     temp_dir.mkdir(parents=True, exist_ok=True)
+    for old_clip in temp_dir.glob("clip_*.mp4"):
+        try: old_clip.unlink()
+        except Exception: pass
 
     for i, item in enumerate(slide_items, start=1):
         img_path = item["image_path"]

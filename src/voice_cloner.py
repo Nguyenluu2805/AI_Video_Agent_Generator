@@ -95,6 +95,9 @@ def clone_voice_spectral(source_audio: Path, reference_audio: Path, output_audio
 def run_voice_cloner(audio_records: List[Dict[str, Any]] = None, enable_rvc: bool = True) -> List[Dict[str, Any]]:
     """Hàm thực thi chính cho Bước 4: Voice Cloning"""
     config.FINAL_AUDIO_DIR.mkdir(parents=True, exist_ok=True)
+    for old_file in config.FINAL_AUDIO_DIR.glob("final_slide_*.mp3"):
+        try: old_file.unlink()
+        except Exception: pass
 
     if audio_records is None:
         meta_file = config.WORKSPACE_DIR / "base_audio_meta.json"

@@ -130,10 +130,15 @@ def synthesize_everai(
 
 
 async def synthesize_all_audio_async(scripts: List[Dict[str, Any]], voice_name: str = None) -> List[Dict[str, Any]]:
-    """Tổng hợp toàn bộ âm thanh cho các slide."""
+    """Tổng hợp toàn bộ âm thanh mới cho các slide theo đúng kịch bản hiện tại."""
     config.BASE_AUDIO_DIR.mkdir(parents=True, exist_ok=True)
-    audio_records = []
+    
+    # Xóa sạch các file âm thanh cũ trong workspace để không dùng lại bài cũ
+    for old_file in config.BASE_AUDIO_DIR.glob("slide_*.mp3"):
+        try: old_file.unlink()
+        except Exception: pass
 
+    audio_records = []
     selected_voice = voice_name or config.TTS_VOICE or "vi-VN-NamMinhNeural"
     is_everai = selected_voice.startswith("voice-") or selected_voice.startswith("vi_")
 
@@ -141,12 +146,11 @@ async def synthesize_all_audio_async(scripts: List[Dict[str, Any]], voice_name: 
         idx = item["slide_index"]
         audio_file = config.BASE_AUDIO_DIR / f"slide_{idx:03d}.mp3"
 
-        if not (audio_file.exists() and audio_file.stat().st_size > 2048):
-            if is_everai:
-                synthesize_everai(item["script"], audio_file, voice_code=selected_voice)
-            else:
-                await synthesize_edge_tts(item["script"], selected_voice, audio_file)
-            await asyncio.sleep(0.3)
+        if is_everai:
+            synthesize_everai(item["script"], audio_file, voice_code=selected_voice)
+        else:
+            await synthesize_edge_tts(item["script"], selected_voice, audio_file)
+        await asyncio.sleep(0.3)
 
         audio_records.append({
             "slide_index": idx,

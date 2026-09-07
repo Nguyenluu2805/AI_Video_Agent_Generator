@@ -71,6 +71,12 @@ def extract_text_and_notes(pptx_path: Path) -> List[Dict[str, Any]]:
 def export_slides_as_images(pptx_path: Path, output_dir: Path) -> bool:
     """Xuất tất cả slide thành ảnh PNG 1080p bằng PowerPoint COM (hoặc Fallback)."""
     output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Xóa sạch các ảnh slide cũ để không bị sót slide từ file bài giảng trước
+    for old_img in output_dir.glob("slide_*.png"):
+        try: old_img.unlink()
+        except Exception: pass
+
     abs_pptx = str(pptx_path.resolve())
 
     # 1. Thử Office COM
