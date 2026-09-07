@@ -57,6 +57,18 @@ async def generate_single_audio_with_retry(text: str, voice: str, output_path: P
         except Exception: pass
     raise last_err or RuntimeError(f"Không thể sinh âm thanh sau {max_retries} lần thử")
 
+def generate_single_audio_everai(text: str, voice_code: str, output_path: Path):
+    """Generate audio using EverAI API."""
+    from everai_tts import synthesize_everai
+    cleaned = clean_text_for_tts(text)
+    synthesize_everai(
+        text=cleaned,
+        output_path=output_path,
+        voice_code=voice_code or "voice-9c25f795-6ed9-4fd4",
+        model_id="everai-v1.6"
+    )
+    return True
+
 async def generate_all_audio_async(scripts: list, voice_name: str = None) -> list:
     """Generate audio files for all slides with genuine Microsoft Neural voices."""
     config.BASE_AUDIO_DIR.mkdir(parents=True, exist_ok=True)
@@ -84,7 +96,10 @@ async def generate_all_audio_async(scripts: list, voice_name: str = None) -> lis
             print(f"[*] Slide {idx}/{len(scripts)}: \"{item.get('title', '')}\" -> [Đã có sẵn: {size_kb} KB]")
         else:
             print(f"[*] Slide {idx}/{len(scripts)}: \"{item.get('title', '')}\"...")
-            await generate_single_audio_with_retry(item["script"], selected_voice, audio_file)
+            if config.TTS_ENGINE == "everai" or selected_voice.startswith("voice-") or selected_voice.startswith("vi_"):
+                generate_single_audio_everai(item["script"], selected_voice, audio_file)
+            else:
+                await generate_single_audio_with_retry(item["script"], selected_voice, audio_file)
             size_kb = round(audio_file.stat().st_size / 1024, 1)
             print(f"    -> [✓] Đã tạo xong: {audio_file.name} ({size_kb} KB)")
             await asyncio.sleep(0.5)
