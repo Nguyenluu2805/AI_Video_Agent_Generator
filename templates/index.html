@@ -3,23 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Lecture Video Studio | Biến PPTX thành Video Bài Giảng</title>
+    <title>AI Lecture Studio | Biến PPTX thành Video Bài Giảng Chuyên Nghiệp</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
                     colors: {
+                        dark: {
+                            950: '#07090e',
+                            900: '#0d111a',
+                            850: '#121824',
+                            800: '#1b2333',
+                            700: '#2a364f',
+                        },
                         brand: {
-                            50: '#f0f9ff',
                             400: '#38bdf8',
                             500: '#0ea5e9',
                             600: '#0284c7',
-                            700: '#0369a1',
+                        },
+                        accent: {
+                            500: '#6366f1',
+                            600: '#4f46e5',
                         }
                     }
                 }
@@ -27,325 +37,398 @@
         }
     </script>
     <style>
-        body { background-color: #0b0f17; color: #f1f5f9; }
-        .glass-card {
-            background: rgba(18, 24, 38, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        body { background-color: #07090e; color: #f1f5f9; }
+        .glass-panel {
+            background: rgba(13, 17, 26, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
         }
-        .glow-effect {
-            box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.3);
+        .glass-panel-accent {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%);
+            border: 1px solid rgba(14, 165, 233, 0.2);
         }
+        .glow-primary {
+            box-shadow: 0 0 25px -3px rgba(14, 165, 233, 0.25);
+        }
+        .glow-accent {
+            box-shadow: 0 0 25px -3px rgba(99, 102, 241, 0.25);
+        }
+        /* Custom scrollbars */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        ::-webkit-scrollbar-track { background: #0d111a; }
+        ::-webkit-scrollbar-thumb { background: #2a364f; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b4d70; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col font-sans antialiased selection:bg-sky-500 selection:text-white">
+<body class="min-h-screen flex flex-col font-sans antialiased text-slate-100 selection:bg-sky-500 selection:text-white">
 
-    <!-- Top Navigation -->
-    <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50">
+    <!-- Header Navigation -->
+    <header class="border-b border-slate-800/80 bg-dark-950/80 backdrop-blur-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
-                    <i class="fa-solid fa-wand-magic-sparkles text-white text-lg"></i>
+            <div class="flex items-center space-x-3.5">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
+                    <i class="fa-solid fa-play text-white text-base ml-0.5"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold bg-gradient-to-r from-white via-slate-100 to-sky-400 bg-clip-text text-transparent">AI Lecture Video Studio</h1>
-                    <p class="text-xs text-slate-400">Tạo Video Bài Giảng Tự Động Từ PowerPoint</p>
+                    <div class="flex items-center space-x-2">
+                        <h1 class="text-base font-extrabold bg-gradient-to-r from-white via-slate-100 to-sky-400 bg-clip-text text-transparent">AI Video Agent Studio</h1>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20">v2.0 PRO</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Hệ Thống Tự Động Hóa Sản Xuất Video Bài Giảng Từ Slide PPTX</p>
                 </div>
             </div>
 
-            <!-- Hardware & Engine Badges -->
-            <div class="hidden sm:flex items-center space-x-3">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
-                    GPU: RTX 3060 Ti Ready
-                </span>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-sky-500/10 text-sky-400 border border-sky-500/20">
-                    <i class="fa-solid fa-file-powerpoint mr-1.5"></i>
-                    Office 2021 COM
-                </span>
+            <!-- Hardware & Engine Status -->
+            <div class="flex items-center space-x-3">
+                <div class="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-dark-900 border border-slate-800">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-xs font-semibold text-slate-300">GPU: RTX 3060 Ti</span>
+                    <span class="text-slate-600">|</span>
+                    <span class="text-xs text-slate-400">PowerPoint COM</span>
+                    <span class="text-slate-600">|</span>
+                    <span class="text-xs text-indigo-400 font-medium">EverAI Ready</span>
+                </div>
+                <button onclick="location.reload()" class="p-2 rounded-xl bg-dark-900 hover:bg-dark-800 border border-slate-800 text-slate-400 hover:text-white transition-colors" title="Làm mới trang">
+                    <i class="fa-solid fa-rotate-right text-xs"></i>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        
-        <!-- Welcome Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <!-- Main Content Grid -->
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            <!-- Left Column: Uploads & Configuration (5 cols) -->
-            <div class="lg:col-span-5 space-y-6">
+            <!-- LEFT COLUMN: Studio Controls (5 cols) -->
+            <div class="lg:col-span-5 space-y-5">
                 
-                <!-- Step 1: Upload PPTX Box -->
-                <div class="glass-card rounded-2xl p-6 shadow-xl relative overflow-hidden">
-                    <h2 class="text-base font-semibold text-white mb-3 flex items-center">
-                        <i class="fa-solid fa-cloud-arrow-up text-sky-400 mr-2"></i>
-                        1. Tải Lên Slide PowerPoint (.pptx)
-                    </h2>
-
-                    <div id="drop-zone" class="border-2 border-dashed border-slate-700 hover:border-sky-500 rounded-xl p-5 text-center cursor-pointer transition-all bg-slate-900/40 hover:bg-sky-500/5 group">
-                        <input type="file" id="file-input" accept=".pptx" class="hidden">
-                        <div class="w-12 h-12 mx-auto rounded-full bg-slate-800/80 group-hover:bg-sky-500/20 flex items-center justify-center transition-colors mb-2">
-                            <i class="fa-solid fa-file-powerpoint text-xl text-slate-400 group-hover:text-sky-400 transition-colors"></i>
+                <!-- CARD 1: Upload Presentation -->
+                <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2.5">
+                            <span class="w-6 h-6 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-xs font-bold text-sky-400">1</span>
+                            <h2 class="text-sm font-bold text-white uppercase tracking-wider">Slide Bài Giảng (.pptx)</h2>
                         </div>
-                        <p class="text-sm font-medium text-slate-200" id="file-name-display">Kéo thả file .pptx vào đây hoặc <span class="text-sky-400 underline">chọn file</span></p>
-                        <p class="text-[11px] text-slate-400 mt-1" id="file-info-display">Hỗ trợ định dạng PowerPoint (.pptx) lên tới 200MB</p>
+                        <span id="file-status-tag" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-400 border border-slate-700">
+                            Chưa chọn file
+                        </span>
                     </div>
 
-                    <div class="mt-3 flex items-center justify-between text-xs">
-                        <span class="text-slate-400">Chưa có bài giảng?</span>
-                        <button id="btn-use-sample" class="text-sky-400 hover:text-sky-300 font-medium flex items-center hover:underline">
-                            <i class="fa-solid fa-wand-magic mr-1"></i> Dùng Slide mẫu (demo_lecture.pptx)
+                    <!-- Dropzone -->
+                    <div id="drop-zone" class="border-2 border-dashed border-slate-700 hover:border-sky-500/80 rounded-xl p-5 text-center cursor-pointer transition-all bg-dark-900/60 hover:bg-sky-500/5 group">
+                        <input type="file" id="file-input" accept=".pptx" class="hidden">
+                        <div class="w-11 h-11 mx-auto rounded-xl bg-dark-800 group-hover:bg-sky-500/20 flex items-center justify-center transition-colors mb-2.5 border border-slate-700 group-hover:border-sky-500/40">
+                            <i class="fa-solid fa-file-powerpoint text-xl text-slate-400 group-hover:text-sky-400 transition-colors"></i>
+                        </div>
+                        <p class="text-xs font-semibold text-slate-200" id="file-name-display">Kéo thả file .pptx vào đây hoặc <span class="text-sky-400 underline">tải lên</span></p>
+                        <p class="text-[11px] text-slate-400 mt-1" id="file-info-display">Hỗ trợ Microsoft PowerPoint 2016 / 2019 / 2021 / Office 365</p>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1 text-xs">
+                        <span class="text-slate-400 text-[11px]">Chưa có file riêng?</span>
+                        <button id="btn-use-sample" class="text-sky-400 hover:text-sky-300 font-semibold text-[11px] flex items-center space-x-1 hover:underline">
+                            <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                            <span>Dùng Slide mẫu demo_lecture.pptx</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Voice Sample Upload Card (Collapsible Accordion: Ẩn / Hiện) -->
-                <div class="glass-card rounded-2xl p-5 shadow-xl border border-indigo-500/20 bg-gradient-to-b from-indigo-950/20 to-transparent space-y-3">
-                    <div class="flex items-center justify-between cursor-pointer select-none" onclick="toggleVoiceSampleAccordion()">
+                <!-- CARD 2: Voice & AI Engine Settings -->
+                <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-2.5">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-                                <i class="fa-solid fa-microphone-lines text-sm"></i>
-                            </div>
-                            <div>
-                                <h2 class="text-sm font-semibold text-white">2. Gắn Video / Audio Giọng Thật Của Bạn</h2>
-                                <p class="text-[11px] text-slate-400">Tùy chọn học giọng cá nhân (RVC GPU)</p>
-                            </div>
+                            <span class="w-6 h-6 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-xs font-bold text-indigo-400">2</span>
+                            <h2 class="text-sm font-bold text-white uppercase tracking-wider">Giọng Đọc & AI Studio</h2>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <span id="voice-sample-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">
-                                Chưa tải lên
-                            </span>
-                            <div id="voice-sample-chevron" class="w-6 h-6 rounded-lg bg-slate-800/80 flex items-center justify-center text-slate-400 hover:text-white transition-transform duration-300">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                            Neural TTS
+                        </span>
+                    </div>
+
+                    <!-- Voice Dropdown -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1.5 flex items-center justify-between">
+                            <span>Lựa chọn Giọng đọc bài giảng (TTS)</span>
+                            <span class="text-[10px] text-slate-400 font-normal">Hỗ trợ Tiếng Việt & Anh</span>
+                        </label>
+                        <div class="relative">
+                            <select id="voice-select" class="w-full bg-dark-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-sky-500 appearance-none font-medium">
+                                <optgroup label="🌟 MICROSOFT NEURAL TTS (Miễn phí • Trầm ấm • Sư phạm)" class="bg-dark-900 text-sky-400 font-bold">
+                                    <option value="vi-VN-NamMinhNeural" selected class="text-white font-normal">🎙️ Nam Minh (Nam - Giọng chuẩn giảng dạy, dõng dạc)</option>
+                                    <option value="vi-VN-HoaiMyNeural" class="text-white font-normal">🎙️ Hoài My (Nữ - Truyền cảm, ngọt ngào, rõ ràng)</option>
+                                </optgroup>
+                                <optgroup label="🚀 EVERAI MULTILINGUAL & CLONE (Đa ngôn ngữ • Chuẩn tự nhiên)" class="bg-dark-900 text-indigo-400 font-bold">
+                                    <option value="voice-9c25f795-6ed9-4fd4" class="text-emerald-400 font-medium">✨ Giọng Clone Cá Nhân (Nguyên) - EverAI Studio</option>
+                                    <option value="vi_male_lehoang_mb" class="text-white font-normal">🚀 Lê Hoàng (Nam - Miền Bắc)</option>
+                                    <option value="vi_male_minhtriet_mb" class="text-white font-normal">🚀 Minh Triết (Nam - Miền Bắc)</option>
+                                    <option value="vi_female_thuytrang_mb" class="text-white font-normal">🚀 Thùy Trang (Nữ - Miền Bắc)</option>
+                                    <option value="vi_female_kieunhi_mn" class="text-white font-normal">🚀 Kiều Nhi (Nữ - Miền Nam)</option>
+                                </optgroup>
+                            </select>
+                            <div class="absolute right-3.5 top-3 pointer-events-none text-slate-400">
                                 <i class="fa-solid fa-chevron-down text-xs"></i>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Collapsible Drawer (Mặc định ẩn) -->
-                    <div id="voice-sample-drawer" class="hidden pt-2 border-t border-indigo-900/40 space-y-3">
-                        <p class="text-xs text-slate-300">Tải lên bất kỳ video bài giảng cũ (.mp4, .mov) hoặc file ghi âm (.mp3, .wav) để AI học và nhái chất giọng của bạn.</p>
+                    <!-- ACCORDION: Tùy Chọn Nâng Cao & Clone Giọng (ẨN MẶC ĐỊNH) -->
+                    <div class="rounded-xl border border-slate-800 bg-dark-900/60 overflow-hidden transition-all">
+                        <button type="button" onclick="toggleAdvancedAccordion()" class="w-full px-4 py-3 flex items-center justify-between hover:bg-dark-800/60 transition-colors text-left select-none">
+                            <div class="flex items-center space-x-2.5">
+                                <i class="fa-solid fa-sliders text-xs text-slate-400"></i>
+                                <span class="text-xs font-semibold text-slate-300">Tùy chọn nâng cao & Clone giọng thật (RVC)</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span id="advanced-status-badge" class="text-[10px] text-slate-500">Mặc định thu gọn</span>
+                                <i id="advanced-chevron" class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
 
-                        <div id="voice-drop-zone" class="border-2 border-dashed border-indigo-900/60 hover:border-indigo-500 rounded-xl p-4 text-center cursor-pointer transition-all bg-indigo-950/20 hover:bg-indigo-500/10 group">
-                            <input type="file" id="voice-file-input" accept="video/*,audio/*,.mp4,.mov,.mp3,.wav,.m4a" class="hidden">
-                            <i class="fa-solid fa-cloud-arrow-up text-xl text-indigo-400 group-hover:scale-110 transition-transform mb-1"></i>
-                            <p class="text-xs font-medium text-slate-200" id="voice-file-display">Kéo thả Video (.mp4) hoặc Audio (.wav/.mp3) vào đây</p>
-                            <p class="text-[10px] text-slate-400 mt-0.5">Tự động trích xuất giọng sạch sang voice_samples/</p>
+                        <!-- Drawer Content (Hidden by default) -->
+                        <div id="advanced-drawer" class="hidden px-4 pb-4 pt-2 border-t border-slate-800 space-y-3.5">
+                            
+                            <!-- Gemini API Key -->
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-300 mb-1">
+                                    Google Gemini API Key (Viết kịch bản sư phạm)
+                                </label>
+                                <div class="relative">
+                                    <input type="password" id="gemini-api-key" placeholder="AIzaSy... (Để trống nếu dùng kịch bản có sẵn)" 
+                                           class="w-full bg-dark-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500">
+                                    <button type="button" onclick="toggleKeyVisibility()" class="absolute right-3 top-2 text-slate-400 hover:text-slate-200">
+                                        <i class="fa-regular fa-eye text-xs" id="eye-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Voice Sample Upload (RVC) -->
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-300 mb-1">
+                                    Video / Audio Mẫu Giọng Thật (.mp4, .mov, .mp3, .wav)
+                                </label>
+                                <div id="voice-drop-zone" class="border border-dashed border-slate-700 hover:border-indigo-500/80 rounded-lg p-3 text-center cursor-pointer transition-all bg-dark-950/60 hover:bg-indigo-500/5 group">
+                                    <input type="file" id="voice-file-input" accept="video/*,audio/*,.mp4,.mov,.mp3,.wav,.m4a" class="hidden">
+                                    <i class="fa-solid fa-microphone-lines text-base text-indigo-400 mb-1"></i>
+                                    <p class="text-[11px] font-medium text-slate-200" id="voice-file-display">Kéo thả Video hoặc File Ghi Âm vào đây</p>
+                                    <p class="text-[10px] text-slate-400">Tự động trích xuất file mẫu để RVC GPU học giọng</p>
+                                </div>
+                            </div>
+
+                            <!-- RVC Switch -->
+                            <div class="flex items-center justify-between pt-1">
+                                <div>
+                                    <span class="text-xs font-medium text-white block">RVC Voice Cloning (GPU RTX 3060 Ti)</span>
+                                    <span class="text-[10px] text-slate-400">Nhái âm sắc sang giọng thật của bạn</span>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="rvc-toggle" class="sr-only peer" checked>
+                                    <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-500"></div>
+                                </label>
+                            </div>
+
                         </div>
-                    </div>
-                </div>
-
-                <!-- Settings Card -->
-                <div class="glass-card rounded-2xl p-6 shadow-xl space-y-4">
-                    <h2 class="text-base font-semibold text-white flex items-center">
-                        <i class="fa-solid fa-sliders text-sky-400 mr-2"></i>
-                        3. Cấu Hình Giọng Đọc & AI
-                    </h2>
-
-                    <!-- LLM API Key -->
-                    <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">
-                            Google Gemini API Key (Viết kịch bản sư phạm)
-                        </label>
-                        <div class="relative">
-                            <input type="password" id="gemini-api-key" placeholder="AIzaSy... (Để trống nếu dùng Offline script)" 
-                                   class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-sky-500">
-                            <button type="button" onclick="toggleKeyVisibility()" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-200">
-                                <i class="fa-regular fa-eye" id="eye-icon"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Voice Selection -->
-                    <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">Động cơ & Giọng đọc lồng tiếng (TTS)</label>
-                        <select id="voice-select" class="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
-                            <optgroup label="🌟 Microsoft Neural TTS (Miễn phí / Tự nhiên)">
-                                <option value="vi-VN-NamMinhNeural" selected>Giọng Nam (Nam Minh - Trầm ấm, dõng dạc)</option>
-                                <option value="vi-VN-HoaiMyNeural">Giọng Nữ (Hoài My - Truyền cảm, sư phạm)</option>
-                            </optgroup>
-                            <optgroup label="🚀 EverAI Multilingual (Hỗ trợ tiếng Anh & Clone)">
-                                <option value="voice-9c25f795-6ed9-4fd4">✨ Giọng Clone Cá Nhân (Nguyên)</option>
-                                <option value="vi_male_lehoang_mb">Lê Hoàng (Nam - Miền Bắc)</option>
-                                <option value="vi_male_minhtriet_mb">Minh Triết (Nam - Miền Bắc)</option>
-                                <option value="vi_female_thuytrang_mb">Thùy Trang (Nữ - Miền Bắc)</option>
-                                <option value="vi_female_kieunhi_mn">Kiều Nhi (Nữ - Miền Nam)</option>
-                            </optgroup>
-                        </select>
-                    </div>
-
-                    <!-- RVC Switch -->
-                    <div class="flex items-center justify-between pt-2 border-t border-slate-800">
-                        <div>
-                            <span class="text-xs font-medium text-white block">Voice Cloning RVC (GPU RTX 3060 Ti)</span>
-                            <span class="text-[11px] text-slate-400">Tự động nhái âm sắc sang giọng thật của bạn</span>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="rvc-toggle" class="sr-only peer" checked>
-                            <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-500"></div>
-                        </label>
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="pt-2 space-y-3">
-                        <button id="btn-quick-generate" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-sky-500/25 flex items-center justify-center transition-all hover:scale-[1.01] active:scale-[0.99]">
-                            <i class="fa-solid fa-bolt text-yellow-300 mr-2"></i>
+                    <div class="space-y-2.5 pt-2">
+                        <button id="btn-quick-generate" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 via-indigo-600 to-purple-600 hover:from-sky-400 hover:via-indigo-500 hover:to-purple-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg glow-primary flex items-center justify-center transition-all hover:scale-[1.01] active:scale-[0.99]">
+                            <i class="fa-solid fa-bolt text-yellow-300 mr-2 text-sm"></i>
                             Tạo Video Tự Động 1-Click
                         </button>
                         
-                        <button id="btn-preview-scripts" class="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-medium text-sm flex items-center justify-center transition-all">
+                        <button id="btn-preview-scripts" class="w-full py-2.5 px-4 rounded-xl bg-dark-800 hover:bg-dark-700 border border-slate-700/80 text-slate-200 font-semibold text-xs flex items-center justify-center transition-all">
                             <i class="fa-regular fa-pen-to-square text-sky-400 mr-2"></i>
                             Xem & Sửa Kịch Bản Trước Khi Tạo
                         </button>
                     </div>
+
                 </div>
+
             </div>
 
-            <!-- Right Column: Process Monitor & Video Output (7 cols) -->
-            <div class="lg:col-span-7 space-y-6">
+            <!-- RIGHT COLUMN: Output & Studio Monitor (7 cols) -->
+            <div class="lg:col-span-7 space-y-5">
                 
-                <!-- Live Pipeline Progress Card -->
-                <div class="glass-card rounded-2xl p-6 shadow-xl">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-base font-semibold text-white flex items-center">
-                            <i class="fa-solid fa-bars-progress text-sky-400 mr-2"></i>
-                            Tiến Trình Xử Lý Video
-                        </h2>
-                        <span id="pipeline-status-badge" class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
+                <!-- Video Output Player Frame -->
+                <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2.5">
+                            <i class="fa-solid fa-film text-sky-400"></i>
+                            <h2 class="text-sm font-bold text-white uppercase tracking-wider">Video Bài Giảng Hoàn Thiện</h2>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span id="resolution-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                                1080p Full HD
+                            </span>
+                            <a id="btn-download-video" href="#" download class="hidden px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex items-center space-x-1.5 shadow-md">
+                                <i class="fa-solid fa-download text-xs"></i>
+                                <span>Tải Video MP4</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Video Container -->
+                    <div class="relative aspect-video w-full rounded-xl bg-dark-950 border border-slate-800 overflow-hidden flex items-center justify-center shadow-inner group">
+                        
+                        <!-- Empty State Placeholder -->
+                        <div id="video-placeholder" class="text-center p-6 space-y-3">
+                            <div class="w-16 h-16 rounded-2xl bg-dark-900 border border-slate-800 flex items-center justify-center mx-auto text-slate-600">
+                                <i class="fa-solid fa-clapperboard text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-semibold text-slate-300">Chưa có video được render</h3>
+                                <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Chọn file slide bài giảng và nhấn "Tạo Video Tự Động 1-Click" để bắt đầu quy trình AI hoàn toàn tự động.</p>
+                            </div>
+                        </div>
+
+                        <!-- Active HTML5 Video Player -->
+                        <video id="video-player" controls class="w-full h-full object-contain hidden">
+                            <source id="video-source" src="" type="video/mp4">
+                            Trình duyệt của bạn không hỗ trợ thẻ video.
+                        </video>
+
+                    </div>
+                </div>
+
+                <!-- Live Pipeline Stepper -->
+                <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-3.5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-bars-staggered text-sky-400"></i>
+                            <h2 class="text-xs font-bold text-white uppercase tracking-wider">Tiến Trình Xử Lý Pipeline</h2>
+                        </div>
+                        <span id="pipeline-status-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-800 text-slate-300 border border-slate-700">
                             Sẵn sàng
                         </span>
                     </div>
 
-                    <!-- Main Progress Bar -->
-                    <div class="w-full bg-slate-800 rounded-full h-3 mb-4 overflow-hidden p-0.5 border border-slate-700/50">
-                        <div id="progress-bar" class="bg-gradient-to-r from-sky-500 to-indigo-500 h-2 rounded-full transition-all duration-300 w-0"></div>
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-dark-950 rounded-full h-2.5 overflow-hidden p-0.5 border border-slate-800">
+                        <div id="progress-bar" class="bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-500 h-1.5 rounded-full transition-all duration-300 w-0"></div>
                     </div>
 
-                    <!-- Step badges grid -->
-                    <div class="grid grid-cols-5 gap-2 text-center text-xs mb-5">
-                        <div id="step-badge-1" class="p-2 rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-400">
-                            <div class="font-bold mb-0.5">Bước 1</div>
-                            <div class="text-[10px] truncate">PPTX Extract</div>
+                    <!-- 5 Steps Indicators -->
+                    <div class="grid grid-cols-5 gap-2 text-center text-xs">
+                        <div id="step-badge-1" class="p-2 rounded-xl bg-dark-900 border border-slate-800 text-slate-500 transition-colors">
+                            <div class="font-bold text-[11px] mb-0.5">BƯỚC 1</div>
+                            <div class="text-[10px] truncate">Slide Extract</div>
                         </div>
-                        <div id="step-badge-2" class="p-2 rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-400">
-                            <div class="font-bold mb-0.5">Bước 2</div>
+                        <div id="step-badge-2" class="p-2 rounded-xl bg-dark-900 border border-slate-800 text-slate-500 transition-colors">
+                            <div class="font-bold text-[11px] mb-0.5">BƯỚC 2</div>
                             <div class="text-[10px] truncate">AI Script</div>
                         </div>
-                        <div id="step-badge-3" class="p-2 rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-400">
-                            <div class="font-bold mb-0.5">Bước 3</div>
-                            <div class="text-[10px] truncate">TTS Audio</div>
+                        <div id="step-badge-3" class="p-2 rounded-xl bg-dark-900 border border-slate-800 text-slate-500 transition-colors">
+                            <div class="font-bold text-[11px] mb-0.5">BƯỚC 3</div>
+                            <div class="text-[10px] truncate">TTS Voice</div>
                         </div>
-                        <div id="step-badge-4" class="p-2 rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-400">
-                            <div class="font-bold mb-0.5">Bước 4</div>
+                        <div id="step-badge-4" class="p-2 rounded-xl bg-dark-900 border border-slate-800 text-slate-500 transition-colors">
+                            <div class="font-bold text-[11px] mb-0.5">BƯỚC 4</div>
                             <div class="text-[10px] truncate">Voice RVC</div>
                         </div>
-                        <div id="step-badge-5" class="p-2 rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-400">
-                            <div class="font-bold mb-0.5">Bước 5</div>
+                        <div id="step-badge-5" class="p-2 rounded-xl bg-dark-900 border border-slate-800 text-slate-500 transition-colors">
+                            <div class="font-bold text-[11px] mb-0.5">BƯỚC 5</div>
                             <div class="text-[10px] truncate">Render MP4</div>
                         </div>
                     </div>
-
-                    <!-- Terminal Log Output -->
-                    <div class="bg-black/80 rounded-xl p-4 font-mono text-xs text-slate-300 border border-slate-800 h-44 overflow-y-auto space-y-1.5" id="log-terminal">
-                        <div class="text-slate-400">> Hệ thống đã sẵn sàng. Hãy chọn file PowerPoint và gắn video giọng của bạn để bắt đầu.</div>
-                    </div>
                 </div>
 
-                <!-- Video Result Card -->
-                <div id="video-result-container" class="glass-card rounded-2xl p-6 shadow-xl space-y-4">
+                <!-- Realtime Console Logs -->
+                <div class="glass-panel rounded-2xl p-4 shadow-xl space-y-2">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-base font-semibold text-white flex items-center">
-                            <i class="fa-solid fa-circle-play text-emerald-400 mr-2"></i>
-                            Video Bài Giảng Thành Phẩm
-                        </h2>
-                        <a id="btn-download-video" href="#" download class="hidden inline-flex items-center px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md transition-all">
-                            <i class="fa-solid fa-download mr-1.5"></i> Tải Video MP4
-                        </a>
-                    </div>
-
-                    <!-- Video Player Placeholder -->
-                    <div id="video-wrapper" class="aspect-video bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                        <div id="video-empty-state" class="text-center p-6 text-slate-400">
-                            <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mx-auto mb-3">
-                                <i class="fa-solid fa-film text-2xl text-slate-400"></i>
-                            </div>
-                            <p class="text-sm font-medium">Chưa có video được tạo</p>
-                            <p class="text-xs text-slate-400 mt-1">Video sau khi tạo xong sẽ hiển thị trực tiếp tại đây</p>
+                        <div class="flex items-center space-x-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                            <i class="fa-solid fa-terminal text-slate-500"></i>
+                            <span>Nhật Ký Thực Thi (Console Log)</span>
                         </div>
-                        <video id="player" controls class="hidden w-full h-full object-contain"></video>
+                        <button onclick="clearLogs()" class="text-[11px] text-slate-500 hover:text-slate-300">Xóa log</button>
+                    </div>
+                    <div id="log-terminal" class="h-32 bg-dark-950 rounded-xl p-3 font-mono text-[11px] text-slate-300 overflow-y-auto space-y-1 border border-slate-800/80 selection:bg-slate-700">
+                        <div class="text-sky-400">> AI Video Studio đã khởi động. Sẵn sàng nhận lệnh...</div>
                     </div>
                 </div>
 
             </div>
+
         </div>
 
-        <!-- Script Editor Section / Modal -->
-        <div id="script-editor-section" class="hidden mt-8 glass-card rounded-2xl p-6 shadow-2xl border border-sky-500/30 glow-effect">
-            <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-800">
-                <div>
-                    <h3 class="text-lg font-bold text-white flex items-center">
-                        <i class="fa-solid fa-pen-nib text-sky-400 mr-2"></i>
-                        Xem & Tùy Chỉnh Kịch Bản Từng Trang Slide
-                    </h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Bạn có thể chỉnh sửa lại lời giảng của từng trang slide trước khi tạo video</p>
+        <!-- SCRIPT & SLIDE EDITOR SECTION (Hidden by default) -->
+        <div id="script-editor-section" class="mt-8 glass-panel rounded-2xl p-6 shadow-2xl space-y-6 hidden border border-sky-500/30">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 text-lg">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-white">Chỉnh Sửa Kịch Bản Giảng Dạy Từng Slide</h2>
+                        <p class="text-xs text-slate-400">Bạn có thể sửa trực tiếp lời giảng trước khi tạo audio và xuất video</p>
+                    </div>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <button onclick="closeScriptEditor()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition-all">
-                        Đóng
+                    <button onclick="closeScriptEditor()" class="px-4 py-2 rounded-xl bg-dark-800 hover:bg-dark-700 text-slate-300 text-xs font-semibold">
+                        Đóng lại
                     </button>
-                    <button id="btn-confirm-render" class="px-5 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-sky-500/20 transition-all flex items-center">
-                        <i class="fa-solid fa-check mr-1.5"></i> Xác Nhận & Xuất Video
+                    <button id="btn-confirm-render" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-sky-500/20 flex items-center space-x-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Xác Nhận & Render Video Ngay</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Slide list grid -->
-            <div id="slides-editor-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Dynamically populated slides -->
+            <!-- Slides Grid -->
+            <div id="slides-editor-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-h-[600px] overflow-y-auto pr-2">
+                <!-- Injected via JavaScript -->
             </div>
         </div>
 
     </main>
 
-    <!-- JavaScript Logic -->
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/60 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            AI Video Agent Generator • Hoàn toàn tự động hóa từ Slide PPTX sang Video Bài Giảng 1080p
+        </div>
+    </footer>
+
+    <!-- Client-Side App Logic -->
     <script>
         let currentFilename = 'demo_lecture.pptx';
-        let loadedSlides = [];
         let eventSource = null;
+        let loadedSlides = [];
 
+        // DOM References
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('file-input');
         const fileNameDisplay = document.getElementById('file-name-display');
         const fileInfoDisplay = document.getElementById('file-info-display');
+        const fileStatusTag = document.getElementById('file-status-tag');
         const btnUseSample = document.getElementById('btn-use-sample');
 
         const voiceDropZone = document.getElementById('voice-drop-zone');
         const voiceFileInput = document.getElementById('voice-file-input');
         const voiceFileDisplay = document.getElementById('voice-file-display');
-        const voiceSampleBadge = document.getElementById('voice-sample-badge');
 
         const btnQuickGenerate = document.getElementById('btn-quick-generate');
         const btnPreviewScripts = document.getElementById('btn-preview-scripts');
+        const progressBar = document.getElementById('progress-bar');
+        const pipelineStatusBadge = document.getElementById('pipeline-status-badge');
+        const logTerminal = document.getElementById('log-terminal');
+
+        const videoPlaceholder = document.getElementById('video-placeholder');
+        const videoPlayer = document.getElementById('video-player');
+        const videoSource = document.getElementById('video-source');
+        const btnDownloadVideo = document.getElementById('btn-download-video');
+
         const scriptEditorSection = document.getElementById('script-editor-section');
         const slidesEditorGrid = document.getElementById('slides-editor-grid');
         const btnConfirmRender = document.getElementById('btn-confirm-render');
-        const progressBar = document.getElementById('progress-bar');
-        const logTerminal = document.getElementById('log-terminal');
-        const pipelineStatusBadge = document.getElementById('pipeline-status-badge');
-        const videoPlayer = document.getElementById('player');
-        const videoEmptyState = document.getElementById('video-empty-state');
-        const btnDownloadVideo = document.getElementById('btn-download-video');
 
+        // File Upload Handlers
         dropZone.addEventListener('click', () => fileInput.click());
-        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-sky-400', 'bg-sky-500/10'); });
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-sky-400', 'bg-sky-500/10'));
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-sky-500', 'bg-sky-500/10'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-sky-500', 'bg-sky-500/10'));
         dropZone.addEventListener('drop', (e) => {
             e.preventDefault();
-            dropZone.classList.remove('border-sky-400', 'bg-sky-500/10');
+            dropZone.classList.remove('border-sky-500', 'bg-sky-500/10');
             if (e.dataTransfer.files.length) uploadFile(e.dataTransfer.files[0]);
         });
         fileInput.addEventListener('change', (e) => {
@@ -353,11 +436,11 @@
         });
 
         voiceDropZone.addEventListener('click', () => voiceFileInput.click());
-        voiceDropZone.addEventListener('dragover', (e) => { e.preventDefault(); voiceDropZone.classList.add('border-indigo-400', 'bg-indigo-500/20'); });
-        voiceDropZone.addEventListener('dragleave', () => voiceDropZone.classList.remove('border-indigo-400', 'bg-indigo-500/20'));
+        voiceDropZone.addEventListener('dragover', (e) => { e.preventDefault(); voiceDropZone.classList.add('border-indigo-500', 'bg-indigo-500/10'); });
+        voiceDropZone.addEventListener('dragleave', () => voiceDropZone.classList.remove('border-indigo-500', 'bg-indigo-500/10'));
         voiceDropZone.addEventListener('drop', (e) => {
             e.preventDefault();
-            voiceDropZone.classList.remove('border-indigo-400', 'bg-indigo-500/20');
+            voiceDropZone.classList.remove('border-indigo-500', 'bg-indigo-500/10');
             if (e.dataTransfer.files.length) uploadVoiceSampleFile(e.dataTransfer.files[0]);
         });
         voiceFileInput.addEventListener('change', (e) => {
@@ -366,14 +449,16 @@
 
         btnUseSample.addEventListener('click', () => {
             currentFilename = 'demo_lecture.pptx';
-            fileNameDisplay.innerHTML = `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Đang dùng Slide mẫu: demo_lecture.pptx</span>`;
-            fileInfoDisplay.innerText = 'Gồm 3 slide bài giảng mẫu có đầy đủ Speaker Notes';
-            appendLog('> Đã chọn file bài giảng mẫu demo_lecture.pptx.');
+            fileNameDisplay.innerHTML = `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Đang dùng: demo_lecture.pptx</span>`;
+            fileInfoDisplay.innerText = 'Slide bài giảng mẫu chuẩn 26 trang có nội dung và cấu trúc đầy đủ';
+            fileStatusTag.innerText = 'demo_lecture.pptx';
+            fileStatusTag.className = 'px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+            appendLog('> Đã chọn slide mẫu demo_lecture.pptx.');
         });
 
         function uploadFile(file) {
             if (!file.name.toLowerCase().endsWith('.pptx')) {
-                alert('Vui lòng chỉ tải lên file có đuôi .pptx');
+                alert('Vui lòng chỉ tải lên file có định dạng PowerPoint .pptx');
                 return;
             }
             fileNameDisplay.innerText = `Đang tải lên: ${file.name}...`;
@@ -387,16 +472,18 @@
                         currentFilename = data.filename;
                         fileNameDisplay.innerHTML = `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> ${data.filename}</span>`;
                         fileInfoDisplay.innerText = `Kích thước: ${data.size_kb} KB`;
+                        fileStatusTag.innerText = 'Đã tải lên';
+                        fileStatusTag.className = 'px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
                         appendLog(`> Tải lên thành công: ${data.filename}`);
                     } else {
                         alert(data.error || 'Lỗi tải file');
                     }
                 })
-                .catch(err => alert('Lỗi khi tải file: ' + err));
+                .catch(err => alert('Lỗi tải file: ' + err));
         }
 
         function uploadVoiceSampleFile(file) {
-            voiceFileDisplay.innerText = `Đang tải & trích xuất giọng từ: ${file.name}...`;
+            voiceFileDisplay.innerText = `Đang tải & trích xuất giọng: ${file.name}...`;
             const formData = new FormData();
             formData.append('file', file);
 
@@ -405,25 +492,30 @@
                 .then(data => {
                     if (data.success) {
                         voiceFileDisplay.innerHTML = `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-check mr-1"></i> ${data.filename} (${data.size_mb} MB)</span>`;
-                        voiceSampleBadge.innerText = 'Đã sẵn sàng';
-                        voiceSampleBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
-                        appendLog(`> Đã gắn file giọng nói của bạn: ${data.filename}. File WAV chuẩn đã tạo tại voice_samples/my_voice_sample.wav`);
+                        appendLog(`> Đã gắn file giọng nói: ${data.filename}. Trích xuất WAV thành công.`);
                     } else {
-                        alert(data.error || 'Lỗi khi trích xuất giọng nói');
+                        alert(data.error || 'Lỗi trích xuất giọng nói');
                     }
                 })
                 .catch(err => alert('Lỗi: ' + err));
         }
 
-        function toggleVoiceSampleAccordion() {
-            const drawer = document.getElementById('voice-sample-drawer');
-            const chevron = document.getElementById('voice-sample-chevron');
+        // Toggle Accordion function
+        function toggleAdvancedAccordion() {
+            const drawer = document.getElementById('advanced-drawer');
+            const chevron = document.getElementById('advanced-chevron');
+            const badge = document.getElementById('advanced-status-badge');
+            
             if (drawer.classList.contains('hidden')) {
                 drawer.classList.remove('hidden');
                 chevron.style.transform = 'rotate(180deg)';
+                badge.innerText = 'Đang mở';
+                badge.className = 'text-[10px] text-sky-400 font-semibold';
             } else {
                 drawer.classList.add('hidden');
                 chevron.style.transform = 'rotate(0deg)';
+                badge.innerText = 'Mặc định thu gọn';
+                badge.className = 'text-[10px] text-slate-500';
             }
         }
 
@@ -446,57 +538,76 @@
             logTerminal.scrollTop = logTerminal.scrollHeight;
         }
 
+        function clearLogs() {
+            logTerminal.innerHTML = '<div class="text-sky-400">> Đã xóa toàn bộ log.</div>';
+        }
+
         function connectSSE() {
             if (eventSource) eventSource.close();
             eventSource = new EventSource('/api/progress-stream');
-            eventSource.onmessage = function(event) {
-                const data = JSON.parse(event.data);
-                if (data.log) appendLog(data.log);
-                if (data.progress !== undefined) {
-                    progressBar.style.width = data.progress + '%';
-                }
-                updateStepBadges(data.progress);
 
-                if (data.status === 'processing') {
-                    pipelineStatusBadge.innerText = data.step || 'Đang xử lý...';
-                    pipelineStatusBadge.className = 'px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-400 border border-sky-500/30 animate-pulse';
-                } else if (data.status === 'completed') {
-                    pipelineStatusBadge.innerText = 'Hoàn tất 100%';
-                    pipelineStatusBadge.className = 'px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
-                    if (data.video) {
-                        displayVideo(data.video);
-                    }
+            eventSource.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                if (data.progress !== undefined) {
+                    progressBar.style.width = `${data.progress}%`;
+                }
+                if (data.log) {
+                    appendLog(data.log);
+                }
+                if (data.step) {
+                    updateStepBadges(data.step);
+                }
+                if (data.status === 'completed' && data.video) {
+                    showCompletedVideo(data.video);
+                    pipelineStatusBadge.innerText = 'Hoàn thành 100%';
+                    pipelineStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+                } else if (data.status === 'running') {
+                    pipelineStatusBadge.innerText = `Đang chạy: ${data.step}`;
+                    pipelineStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30 animate-pulse';
                 } else if (data.status === 'error') {
-                    pipelineStatusBadge.innerText = 'Gặp lỗi';
-                    pipelineStatusBadge.className = 'px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+                    pipelineStatusBadge.innerText = 'Có lỗi xảy ra';
+                    pipelineStatusBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30';
                 }
             };
         }
 
-        function updateStepBadges(percent) {
-            const steps = [
-                { id: 'step-badge-1', threshold: 10 },
-                { id: 'step-badge-2', threshold: 35 },
-                { id: 'step-badge-3', threshold: 60 },
-                { id: 'step-badge-4', threshold: 80 },
-                { id: 'step-badge-5', threshold: 90 },
-            ];
-            steps.forEach(s => {
-                const el = document.getElementById(s.id);
-                if (percent >= s.threshold) {
-                    el.className = 'p-2 rounded-lg bg-sky-500/20 border border-sky-500/40 text-sky-300 font-medium';
-                } else {
-                    el.className = 'p-2 rounded-lg bg-slate-800/80 border border-slate-700/60 text-slate-400';
+        function updateStepBadges(currentStep) {
+            const stepMap = {
+                'Bước 1': 1,
+                'Bước 2': 2,
+                'Bước 3': 3,
+                'Bước 4': 4,
+                'Bước 5': 5
+            };
+
+            let activeIndex = 0;
+            for (const [key, idx] of Object.entries(stepMap)) {
+                if (currentStep.includes(key)) {
+                    activeIndex = idx;
+                    break;
                 }
-            });
+            }
+
+            for (let i = 1; i <= 5; i++) {
+                const el = document.getElementById(`step-badge-${i}`);
+                if (!el) continue;
+                if (i < activeIndex) {
+                    el.className = 'p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold';
+                } else if (i === activeIndex) {
+                    el.className = 'p-2 rounded-xl bg-sky-500/20 border border-sky-500/50 text-sky-300 font-bold glow-primary';
+                } else {
+                    el.className = 'p-2 rounded-xl bg-dark-900 border border-slate-800 text-slate-500';
+                }
+            }
         }
 
-        function displayVideo(filename) {
-            const videoUrl = `/api/video/${filename}?t=${new Date().getTime()}`;
-            const downloadUrl = `/api/download-video/${filename}`;
-            videoPlayer.src = videoUrl;
+        function showCompletedVideo(videoFilename) {
+            const videoUrl = `/api/video/${videoFilename}?t=${new Date().getTime()}`;
+            const downloadUrl = `/api/download-video/${videoFilename}`;
+
+            videoPlaceholder.classList.add('hidden');
             videoPlayer.classList.remove('hidden');
-            videoEmptyState.classList.add('hidden');
+            videoSource.src = videoUrl;
             btnDownloadVideo.href = downloadUrl;
             btnDownloadVideo.classList.remove('hidden');
             videoPlayer.load();
@@ -526,9 +637,9 @@
 
         btnPreviewScripts.addEventListener('click', () => {
             const apiKey = document.getElementById('gemini-api-key').value;
-            appendLog('> Đang trích xuất slide và yêu cầu AI viết kịch bản...');
+            appendLog('> Đang trích xuất slide và chuẩn bị kịch bản...');
             btnPreviewScripts.disabled = true;
-            btnPreviewScripts.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang trích xuất slide...`;
+            btnPreviewScripts.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang tải kịch bản...`;
 
             fetch('/api/extract-and-script', {
                 method: 'POST',
@@ -560,18 +671,18 @@
             slidesEditorGrid.innerHTML = '';
             slides.forEach((s, idx) => {
                 const card = document.createElement('div');
-                card.className = 'bg-slate-900/90 rounded-xl p-4 border border-slate-800 space-y-3';
+                card.className = 'bg-dark-900/90 rounded-xl p-4 border border-slate-800 space-y-3';
                 card.innerHTML = `
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-sky-400">Trang Slide ${s.slide_index}</span>
                         <span class="text-[11px] text-slate-400 truncate max-w-[160px]">${s.title}</span>
                     </div>
-                    <div class="aspect-video bg-slate-950 rounded-lg overflow-hidden border border-slate-800">
+                    <div class="aspect-video bg-dark-950 rounded-lg overflow-hidden border border-slate-800">
                         <img src="${s.image_url}?t=${new Date().getTime()}" alt="Slide ${s.slide_index}" class="w-full h-full object-cover">
                     </div>
                     <div>
                         <label class="block text-[11px] font-medium text-slate-400 mb-1">Lời giảng lồng tiếng (Voiceover):</label>
-                        <textarea id="script-input-${idx}" rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500">${s.script}</textarea>
+                        <textarea id="script-input-${idx}" rows="4" class="w-full bg-dark-950 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500">${s.script}</textarea>
                     </div>
                 `;
                 slidesEditorGrid.appendChild(card);
@@ -615,6 +726,7 @@
             });
         });
 
+        // Initialize SSE connection on load
         connectSSE();
     </script>
 </body>

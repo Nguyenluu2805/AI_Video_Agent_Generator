@@ -21,7 +21,16 @@ from step5_video import run_step5
 from extract_voice_sample import extract_audio_from_video
 
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500 MB max upload
+
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 VOICE_SAMPLES_DIR = BASE_DIR / "voice_samples"
 VOICE_SAMPLES_DIR.mkdir(parents=True, exist_ok=True)
