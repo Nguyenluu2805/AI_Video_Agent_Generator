@@ -20,49 +20,91 @@ except (ImportError, ValueError):
 
 EVERAI_BASE_URL = "https://www.everai.vn/api/v1/tts"
 
-def clean_text_for_tts(text: str) -> str:
-    """Chuẩn hóa văn bản, mở rộng ký hiệu và thuật ngữ tiếng Anh."""
-    text = text.replace("%", " phần trăm")
-    text = text.replace("&", " và ")
-    text = text.replace(" - ", ", ")
-    text = text.replace(":", ", ")
 
+def clean_text_for_tts(text: str) -> str:
+    """Chuẩn hóa văn bản, làm sạch ký tự đặc biệt, dấu gạch nối và ký hiệu code/toán học để giọng đọc mượt mà."""
+    if not text:
+        return "Nội dung slide bài giảng."
+
+    # Chuẩn hóa mọi biến thể dấu gạch ngang (em-dash, en-dash, hyphen) thành dấu phẩy
+    text = re.sub(r'[\u2012\u2013\u2014\u2015\u2212\-]+', ', ', text)
+
+    # Chuẩn hóa dấu ngoặc kép / đơn cong & thẳng
+    text = re.sub(r'[\u2018\u2019\'\`]', ' ', text)
+    text = re.sub(r'[\u201C\u201D\"]', ' ', text)
+
+    # Ký tự toán học & biểu tượng
+    text = text.replace("%", " phần trăm ")
+    text = text.replace("&", " và ")
+    text = text.replace("=", " gán bằng ")
+    text = text.replace("+", " cộng ")
+    text = text.replace(":", ", ")
+    text = text.replace(";", ", ")
+    text = text.replace("→", " chuyển thành ")
+    text = text.replace("←", " từ ")
+    text = text.replace("✓", " ")
+    text = text.replace("⚡", " ")
+    text = text.replace("◈", " ")
+    text = re.sub(r'[Σ∑]', ' tổng ', text)
+    text = re.sub(r'[•·]', ' ', text)
+
+    # Sửa chữ viết tắt có dấu chấm: D.E.E.P -> DEEP
     text = re.sub(r'\b([A-Za-z])\.([A-Za-z])\.([A-Za-z])\.([A-Za-z])\b', r'\1\2\3\4', text)
     text = re.sub(r'\b([A-Za-z])\.([A-Za-z])\.([A-Za-z])\b', r'\1\2\3', text)
     text = re.sub(r'\b([A-Za-z])\.([A-Za-z])\b', r'\1\2', text)
 
-    text = re.sub(r'[\*\#\_\[\]\(\)\{\}\<\>]', '', text)
+    # Loại bỏ code blocks, markdown symbols, dấu ngoặc rỗng
+    text = re.sub(r'[\*\#\_\[\]\(\)\{\}\<\>\/\\\|\~\^\@\$\!\?]', ' ', text)
     text = re.sub(r'\s+', ' ', text).strip()
+
+    if len(text) < 3:
+        return "Nội dung slide bài giảng tiếp theo."
     return text
 
 
-async def synthesize_edge_tts(text: str, voice: str, output_path: Path, max_retries: int = 5) -> bool:
-    """Tổng hợp giọng bằng Microsoft Neural TTS (Edge TTS)."""
+def synthesize_gtts_fallback(text: str, output_path: Path) -> bool:
+    """Fallback an toàn bằng gTTS nếu kết nối EdgeTTS gặp sự cố mạng."""
+    from gtts import gTTS
+    cleaned = clean_text_for_tts(text)
+    tts = gTTS(text=cleaned, lang='vi')
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    tts.save(str(output_path.resolve()))
+    return True
+
+
+async def synthesize_edge_tts(text: str, voice: str, output_path: Path, max_retries: int = 3) -> bool:
+    """Tổng hợp giọng bằng Microsoft Neural TTS (Edge TTS) với cơ chế atomic write và auto-retry."""
     import edge_tts
 
     cleaned = clean_text_for_tts(text)
     rate = config.TTS_RATE or "+0%"
     volume = config.TTS_VOLUME or "+0%"
+    tmp_path = output_path.with_suffix(".tmp.mp3")
 
     last_err = None
     for attempt in range(1, max_retries + 1):
-        if output_path.exists() and output_path.stat().st_size == 0:
-            try: output_path.unlink()
+        if tmp_path.exists():
+            try: tmp_path.unlink()
             except Exception: pass
 
         try:
             communicate = edge_tts.Communicate(text=cleaned, voice=voice, rate=rate, volume=volume)
-            await asyncio.wait_for(communicate.save(str(output_path.resolve())), timeout=45.0)
-            if output_path.exists() and output_path.stat().st_size > 1024:
+            await asyncio.wait_for(communicate.save(str(tmp_path.resolve())), timeout=45.0)
+            if tmp_path.exists() and tmp_path.stat().st_size > 512:
+                if output_path.exists():
+                    try: output_path.unlink()
+                    except Exception: pass
+                tmp_path.rename(output_path)
                 return True
         except Exception as e:
             last_err = e
             if attempt < max_retries:
-                await asyncio.sleep(2.0 * attempt)
+                await asyncio.sleep(1.0 * attempt)
 
-    if output_path.exists() and output_path.stat().st_size == 0:
-        try: output_path.unlink()
+    if tmp_path.exists():
+        try: tmp_path.unlink()
         except Exception: pass
+
     raise last_err or RuntimeError(f"Không thể sinh âm thanh EdgeTTS sau {max_retries} lần thử.")
 
 
@@ -134,9 +176,9 @@ async def synthesize_all_audio_async(
     voice_name: str = None,
     on_progress: Any = None
 ) -> List[Dict[str, Any]]:
-    """Tổng hợp toàn bộ âm thanh mới cho các slide với khả năng xử lý song song tốc độ cao."""
+    """Tổng hợp toàn bộ âm thanh mới cho các slide với cập nhật tiến độ liên tục."""
     config.BASE_AUDIO_DIR.mkdir(parents=True, exist_ok=True)
-    
+
     # Xóa sạch các file âm thanh cũ trong workspace
     for old_file in config.BASE_AUDIO_DIR.glob("slide_*.mp3"):
         try: old_file.unlink()
@@ -145,38 +187,39 @@ async def synthesize_all_audio_async(
     selected_voice = voice_name or config.TTS_VOICE or "vi-VN-NamMinhNeural"
     is_everai = selected_voice.startswith("voice-") or selected_voice.startswith("vi_")
 
+    audio_records = []
     total = len(scripts)
-    sem = asyncio.Semaphore(4) # Xử lý đồng thời 4 slide cùng lúc
-    completed = 0
 
-    async def process_slide(item: Dict[str, Any]):
-        nonlocal completed
+    for i, item in enumerate(scripts, start=1):
         idx = item["slide_index"]
         audio_file = config.BASE_AUDIO_DIR / f"slide_{idx:03d}.mp3"
 
-        async with sem:
+        try:
             if is_everai:
-                loop = asyncio.get_event_loop()
-                await loop.run_in_executor(None, synthesize_everai, item["script"], audio_file, selected_voice)
+                synthesize_everai(item["script"], audio_file, voice_code=selected_voice)
             else:
                 await synthesize_edge_tts(item["script"], selected_voice, audio_file)
+        except Exception as e:
+            print(f"[!] Cảnh báo Slide {idx} ({e}). Đang tự động chuyển sang gTTS fallback...")
+            try:
+                synthesize_gtts_fallback(item["script"], audio_file)
+            except Exception as e2:
+                print(f"[!] Lỗi gTTS fallback Slide {idx}: {e2}")
 
-            completed += 1
-            pct = 50 + int((completed / total) * 20)  # 50% -> 70%
-            if on_progress:
-                on_progress("Bước 3: Tổng Hợp Giọng Nói", pct, f"Đã lồng tiếng Slide {completed}/{total}: {item.get('title', '')[:30]}")
+        pct = 50 + int((i / total) * 20)  # 50% -> 70%
+        title_disp = item.get('title', f'Slide {idx}')[:30]
+        if on_progress:
+            on_progress("Bước 3: Tổng Hợp Giọng Nói", pct, f"Đã lồng tiếng Slide {i}/{total}: {title_disp}")
 
-            return {
-                "slide_index": idx,
-                "title": item.get("title", f"Slide {idx}"),
-                "script": item["script"],
-                "base_audio_path": str(audio_file.resolve())
-            }
+        audio_records.append({
+            "slide_index": idx,
+            "title": item.get("title", f"Slide {idx}"),
+            "script": item["script"],
+            "base_audio_path": str(audio_file.resolve())
+        })
+        await asyncio.sleep(0.1)
 
-    tasks = [process_slide(item) for item in scripts]
-    results = await asyncio.gather(*tasks)
-    results = sorted(results, key=lambda x: x["slide_index"])
-    return results
+    return audio_records
 
 
 def run_tts_engine(scripts: List[Dict[str, Any]] = None, voice_name: str = None, on_progress: Any = None) -> List[Dict[str, Any]]:

@@ -47,7 +47,7 @@ def generate_script_gemini(slides_data: List[Dict[str, Any]], api_key: str) -> L
     client = genai.Client(api_key=api_key.strip())
     prompt = f"Hãy đóng vai một giảng viên sư phạm xuất sắc và viết lời giảng chi tiết, truyền cảm cho từng slide dưới đây:\n\n{json.dumps(slides_data, ensure_ascii=False, indent=2)}"
 
-    models_to_try = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash-latest", "gemini-2.5-pro", config.GEMINI_MODEL]
+    models_to_try = [config.GEMINI_MODEL, "gemini-3.6-flash", "gemini-3.5-flash", "gemini-flash-latest", "gemini-2.5-flash-lite", "gemini-2.5-flash"]
     last_err = None
     for model_name in models_to_try:
         try:
@@ -76,7 +76,7 @@ def generate_script_gemini(slides_data: List[Dict[str, Any]], api_key: str) -> L
 
 
 def generate_rich_offline_script(slides_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Bộ tạo kịch bản sư phạm tự động Offline nếu không có API Key."""
+    """Bộ tạo kịch bản sư phạm súc tích, tự nhiên và chuyên nghiệp khi Offline."""
     scripts = []
     total = len(slides_data)
 
@@ -87,44 +87,50 @@ def generate_rich_offline_script(slides_data: List[Dict[str, Any]]) -> List[Dict
         notes = s.get("speaker_notes", "").strip()
 
         paragraphs = []
+        
+        # 1. Câu dẫn nhập đề
         if idx == 1:
-            paragraphs.append(f"Chào mừng tất cả các bạn học viên đã đến với bài học hôm nay. Trong bài giảng này, chúng ta sẽ cùng nhau tìm hiểu một chủ đề vô cùng quan trọng: {title}.")
+            paragraphs.append(f"Chào mừng các bạn đến với bài học hôm nay. Chúng ta sẽ cùng nhau tìm hiểu về chủ đề: {title}.")
         elif idx == total:
-            paragraphs.append(f"Để khép lại bài học hôm nay, chúng ta cùng đi đến phần tổng kết và đúc kết về: {title}.")
+            paragraphs.append(f"Để khép lại bài học, chúng ta cùng đi đến phần tổng kết về: {title}.")
         else:
-            paragraphs.append(f"Tiếp nối nội dung vừa rồi, bây giờ chúng ta sẽ cùng nhau chuyển sang phần trọng tâm tiếp theo, đó là: {title}.")
+            paragraphs.append(f"Tiếp theo, chúng ta cùng chuyển sang phần: {title}.")
 
+        # 2. Ghi chú diễn giả (nếu có)
         if notes:
-            cleaned_notes = notes.replace("•", "").strip()
-            paragraphs.append(f"Như chúng ta đã biết, {cleaned_notes}")
+            cleaned_notes = re.sub(r'[\*\#\_•✓⚡◈Σ]', '', notes).strip()
+            if len(cleaned_notes) > 5:
+                paragraphs.append(f"Cụ thể, {cleaned_notes}.")
 
-        if bullets:
-            connectors = [
-                "Trước hết, điểm cốt lõi đầu tiên mà các bạn cần lưu ý chính là",
-                "Bên cạnh đó, một yếu tố đặc biệt quan trọng tiếp theo là",
-                "Hơn thế nữa, trong thực tế triển khai, chúng ta thấy rằng",
-                "Đồng thời, để đạt được hiệu quả tối ưu, các bạn cần chú ý đến",
-                "Và cuối cùng, một khía cạnh không thể bỏ qua chính là"
-            ]
-            for i, b in enumerate(bullets):
-                cleaned = b.lstrip("0123456789.-•* ").strip()
-                if not cleaned:
-                    continue
-                conn = connectors[i % len(connectors)]
-                if cleaned.endswith("."):
-                    cleaned = cleaned[:-1]
+        # 3. Lọc và tổng hợp các ý chính (loại bỏ ký tự rác / ký hiệu đơn)
+        meaningful_bullets = []
+        for b in bullets:
+            cleaned = re.sub(r'^[\d\.\-\•\*\#\_\✓\⚡\◈\Σ\s]+', '', b).strip()
+            # Bỏ qua các chuỗi quá ngắn hoặc chỉ là ký hiệu code đơn thuần
+            if len(cleaned) >= 3 and not re.match(r'^[\[\]\{\}\#\_\~\^\*\|\>\<\=\+]+$', cleaned):
+                meaningful_bullets.append(cleaned)
 
-                if len(cleaned.split()) < 6:
-                    paragraphs.append(f"{conn} vấn đề {cleaned}. Điều này đóng vai trò then chốt trong bài học.")
-                else:
-                    first_char = cleaned[0].lower() if len(cleaned) > 1 else cleaned
-                    rest = cleaned[1:] if len(cleaned) > 1 else ""
-                    paragraphs.append(f"{conn} {first_char}{rest}.")
+        # Lấy tối đa 4 ý tiêu biểu nhất để bài giảng vừa vặn, không bị dài lê thê
+        connectors = [
+            "Điểm trọng tâm đầu tiên cần chú ý là",
+            "Bên cạnh đó",
+            "Đồng thời",
+            "Và cuối cùng là"
+        ]
+        
+        for i, b in enumerate(meaningful_bullets[:4]):
+            conn = connectors[i % len(connectors)]
+            if b.endswith("."):
+                b = b[:-1]
+            first_char = b[0].lower() if len(b) > 1 else b
+            rest = b[1:] if len(b) > 1 else ""
+            paragraphs.append(f"{conn} {first_char}{rest}.")
 
+        # 4. Câu chốt slide
         if idx == total:
-            paragraphs.append("Hi vọng rằng qua bài học này, các bạn đã nắm vững toàn bộ kiến thức và có thể tự tin ứng dụng vào thực tế. Cảm ơn các bạn đã chú ý theo dõi!")
+            paragraphs.append("Cảm ơn các bạn đã chú ý theo dõi và chúc các bạn học tập thật tốt!")
         else:
-            paragraphs.append("Các bạn hãy ghi nhớ những điểm trọng tâm này trước khi chúng ta tiếp tục sang slide tiếp theo.")
+            paragraphs.append("Các bạn hãy ghi nhớ điểm này trước khi chúng ta tiếp tục sang slide kế tiếp.")
 
         scripts.append({
             "slide_index": idx,
