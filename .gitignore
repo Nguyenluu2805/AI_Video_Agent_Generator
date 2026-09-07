@@ -1,0 +1,49 @@
+﻿# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment and sensitive keys
+.env
+*.env
+.env.local
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Large Model Weights and Engine repos
+models/**
+!models/.gitkeep
+gpt_sovits_engine/
+rvc_engine/
+TEMP/
+
+# Output and temporary workspace generated files
+workspace/
+output/
+voice_samples/
+*.mp4
+*.mp3
+*.wav
+*.pcm
+*.png
+*.safetensors
+*.pth
+*.index
+*.onnx
+*.bin
+!static/**
+!templates/**
+
+# Keep input directory structure but ignore user sample files if large
+input/*
+!input/.gitkeep
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
