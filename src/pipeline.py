@@ -54,8 +54,8 @@ def run_full_pipeline(
         log("Bước 2: Tạo Kịch Bản", 45, f"AI đã hoàn thành kịch bản sư phạm cho {len(scripts)} slide.")
 
     # Bước 3
-    log("Bước 3: Tổng Hợp Giọng Nói", 50, f"Đang tổng hợp audio bằng giọng đọc: {voice_name or config.TTS_VOICE}...")
-    base_audio = run_tts_engine(scripts, voice_name=voice_name)
+    log("Bước 3: Tổng Hợp Giọng Nói", 50, f"Đang tổng hợp audio bằng giọng đọc: {voice_name or config.TTS_VOICE} (Xử lý song song)...")
+    base_audio = run_tts_engine(scripts, voice_name=voice_name, on_progress=on_progress)
     log("Bước 3: Tổng Hợp Giọng Nói", 70, f"Đã tạo hoàn chỉnh {len(base_audio)} file âm thanh lồng tiếng.")
 
     # Bước 4

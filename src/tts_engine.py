@@ -129,40 +129,57 @@ def synthesize_everai(
     raise TimeoutError(f"EverAI timeout ({timeout_secs}s) cho request: {request_id}")
 
 
-async def synthesize_all_audio_async(scripts: List[Dict[str, Any]], voice_name: str = None) -> List[Dict[str, Any]]:
-    """Tổng hợp toàn bộ âm thanh mới cho các slide theo đúng kịch bản hiện tại."""
+async def synthesize_all_audio_async(
+    scripts: List[Dict[str, Any]], 
+    voice_name: str = None,
+    on_progress: Any = None
+) -> List[Dict[str, Any]]:
+    """Tổng hợp toàn bộ âm thanh mới cho các slide với khả năng xử lý song song tốc độ cao."""
     config.BASE_AUDIO_DIR.mkdir(parents=True, exist_ok=True)
     
-    # Xóa sạch các file âm thanh cũ trong workspace để không dùng lại bài cũ
+    # Xóa sạch các file âm thanh cũ trong workspace
     for old_file in config.BASE_AUDIO_DIR.glob("slide_*.mp3"):
         try: old_file.unlink()
         except Exception: pass
 
-    audio_records = []
     selected_voice = voice_name or config.TTS_VOICE or "vi-VN-NamMinhNeural"
     is_everai = selected_voice.startswith("voice-") or selected_voice.startswith("vi_")
 
-    for item in scripts:
+    total = len(scripts)
+    sem = asyncio.Semaphore(4) # Xử lý đồng thời 4 slide cùng lúc
+    completed = 0
+
+    async def process_slide(item: Dict[str, Any]):
+        nonlocal completed
         idx = item["slide_index"]
         audio_file = config.BASE_AUDIO_DIR / f"slide_{idx:03d}.mp3"
 
-        if is_everai:
-            synthesize_everai(item["script"], audio_file, voice_code=selected_voice)
-        else:
-            await synthesize_edge_tts(item["script"], selected_voice, audio_file)
-        await asyncio.sleep(0.3)
+        async with sem:
+            if is_everai:
+                loop = asyncio.get_event_loop()
+                await loop.run_in_executor(None, synthesize_everai, item["script"], audio_file, selected_voice)
+            else:
+                await synthesize_edge_tts(item["script"], selected_voice, audio_file)
 
-        audio_records.append({
-            "slide_index": idx,
-            "title": item.get("title", f"Slide {idx}"),
-            "script": item["script"],
-            "base_audio_path": str(audio_file.resolve())
-        })
+            completed += 1
+            pct = 50 + int((completed / total) * 20)  # 50% -> 70%
+            if on_progress:
+                on_progress("Bước 3: Tổng Hợp Giọng Nói", pct, f"Đã lồng tiếng Slide {completed}/{total}: {item.get('title', '')[:30]}")
 
-    return audio_records
+            return {
+                "slide_index": idx,
+                "title": item.get("title", f"Slide {idx}"),
+                "script": item["script"],
+                "base_audio_path": str(audio_file.resolve())
+            }
+
+    tasks = [process_slide(item) for item in scripts]
+    results = await asyncio.gather(*tasks)
+    results = sorted(results, key=lambda x: x["slide_index"])
+    return results
 
 
-def run_tts_engine(scripts: List[Dict[str, Any]] = None, voice_name: str = None) -> List[Dict[str, Any]]:
+def run_tts_engine(scripts: List[Dict[str, Any]] = None, voice_name: str = None, on_progress: Any = None) -> List[Dict[str, Any]]:
     """Hàm thực thi chính cho Bước 3: Tổng hợp Audio TTS"""
     if scripts is None:
         script_file = config.WORKSPACE_DIR / "script.json"
@@ -171,7 +188,7 @@ def run_tts_engine(scripts: List[Dict[str, Any]] = None, voice_name: str = None)
         with open(script_file, "r", encoding="utf-8") as f:
             scripts = json.load(f)
 
-    audio_records = asyncio.run(synthesize_all_audio_async(scripts, voice_name=voice_name))
+    audio_records = asyncio.run(synthesize_all_audio_async(scripts, voice_name=voice_name, on_progress=on_progress))
 
     output_meta = config.WORKSPACE_DIR / "base_audio_meta.json"
     with open(output_meta, "w", encoding="utf-8") as f:
